@@ -3544,7 +3544,7 @@ ethers@^4.0.32, ethers@^4.0.40:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^5.0.1, ethers@^5.0.2, ethers@^5.4.7, ethers@^5.5.2:
+ethers@^5.0.1, ethers@^5.0.2, ethers@^5.4.1, ethers@^5.4.7, ethers@^5.5.2:
   version "5.5.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.5.2.tgz#cd2e508c7342c44fa70392f722e8de8f2416489f"
   integrity sha512-EF5W+6Wwcu6BqVwpgmyR5U2+L4c1FQzlM/02dkZOugN3KF0cG9bzHZP+TDJglmPm2/IzCEJDT7KBxzayk7SAHw==
@@ -6222,6 +6222,18 @@ npm-run-path@^2.0.0:
   dependencies:
     path-key "^2.0.0"
 
+nucypher-ts@^0.4.8:
+  version "0.4.8"
+  resolved "http://localhost:4873/nucypher-ts/-/nucypher-ts-0.4.8.tgz#bdf2d23b4c715416465770fc3aafb711016cb2d3"
+  integrity sha512-qzNruDaGytHUwyjPJV8jgj6K8Hg1hYBdY5lv7S8zWZw3fPNJaL09jMgXHSJDDr1ojhpPxgUQJrJ1ysEEMZ6jhA==
+  dependencies:
+    axios "^0.21.1"
+    ethers "^5.4.1"
+    js-sha3 "^0.8.0"
+    qs "^6.10.1"
+    secure-random "^1.1.2"
+    umbral-pre "^0.3.2"
+
 number-is-nan@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
@@ -6824,7 +6836,7 @@ qs@6.7.0:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
-qs@^6.4.0, qs@^6.7.0, qs@^6.9.4:
+qs@^6.10.1, qs@^6.4.0, qs@^6.7.0, qs@^6.9.4:
   version "6.10.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.2.tgz#c1431bea37fc5b24c5bdbafa20f16bdf2a4b9ffe"
   integrity sha512-mSIdjzqznWgfd4pMii7sHtaYF8rx8861hBO80SraY5GT0XQibWZWJSid0avzHGkDIZLImux2S5mXO0Hfct2QCw==
@@ -7312,6 +7324,11 @@ secp256k1@^4.0.1:
     elliptic "^6.5.2"
     node-addon-api "^2.0.0"
     node-gyp-build "^4.2.0"
+
+secure-random@^1.1.2:
+  version "1.1.2"
+  resolved "http://localhost:4873/secure-random/-/secure-random-1.1.2.tgz#ed103b460a851632d420d46448b2a900a41e7f7c"
+  integrity sha512-H2bdSKERKdBV1SwoqYm6C0y+9EA94v6SUBOWO8kDndc4NoUih7Dv6Tsgma7zO1lv27wIvjlD0ZpMQk7um5dheQ==
 
 seedrandom@3.0.1:
   version "3.0.1"
@@ -8301,6 +8318,11 @@ ultron@~1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ultron/-/ultron-1.1.1.tgz#9fe1536a10a664a65266a1e3ccf85fd36302bc9c"
   integrity sha512-UIEXBNeYmKptWH6z8ZnqTeS8fV74zG0/eRU9VGkpzz+LIJNs8W/zM/L+7ctCkRrgbNnnR0xxw4bKOr0cW0N0Og==
+
+umbral-pre@^0.3.2:
+  version "0.3.2"
+  resolved "http://localhost:4873/umbral-pre/-/umbral-pre-0.3.2.tgz#0ca5b95f702c7bb9c81d1ad07111567e5919144c"
+  integrity sha512-IWeeqCngqeaM3LlNP7L1JbDKtrVaTQ6U/22BgMZ81M+25VmKbep36MoTUqYkUeWZRCeRm2EN+cbrTTT6P4MjuQ==
 
 unbox-primitive@^1.0.1:
   version "1.0.1"

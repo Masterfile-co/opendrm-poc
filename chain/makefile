@@ -10,11 +10,20 @@ deploy:
 deploy/local:
 	yarn hardhat deploy --network localhost
 
-script:
-	yarn hardhat run scripts/getPolicyId.ts --network localhost
+listen:
+	yarn hardhat run scripts/listen.ts --network localhost
+
+transfer:
+	yarn hardhat run scripts/transfer.ts --network localhost
 
 typechain:
 	yarn hardhat typechain 
 
 typechain/client:
 	TYPECHAIN_DIR=../client/types yarn hardhat typechain
+
+typechain/server:
+	TYPECHAIN_DIR=../server/src/types yarn hardhat typechain
+
+install:
+	yarn --registry http://localhost:4873/

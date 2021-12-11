@@ -4,42 +4,96 @@
 import {
   BaseContract,
   BigNumber,
+  BigNumberish,
   BytesLike,
   CallOverrides,
+  ContractTransaction,
+  Overrides,
+  PayableOverrides,
   PopulatedTransaction,
   Signer,
   utils,
 } from "ethers";
-import { FunctionFragment, Result } from "@ethersproject/abi";
+import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export interface AbioticAliceManagerInterface extends utils.Interface {
   functions: {
-    "getVerifyingKey()": FunctionFragment;
-    "requestKfrags(string,string)": FunctionFragment;
+    "createPolicy(bytes16,uint64,address[],bytes[])": FunctionFragment;
+    "registerMe(bytes,bytes)": FunctionFragment;
+    "registry(address)": FunctionFragment;
+    "requestPolicy(string,address)": FunctionFragment;
+    "requests(bytes16)": FunctionFragment;
+    "verifyingKey()": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "getVerifyingKey",
-    values?: undefined
+    functionFragment: "createPolicy",
+    values: [BytesLike, BigNumberish, string[], BytesLike[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "requestKfrags",
+    functionFragment: "registerMe",
+    values: [BytesLike, BytesLike]
+  ): string;
+  encodeFunctionData(functionFragment: "registry", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "requestPolicy",
     values: [string, string]
+  ): string;
+  encodeFunctionData(functionFragment: "requests", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "verifyingKey",
+    values?: undefined
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "getVerifyingKey",
+    functionFragment: "createPolicy",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "registerMe", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "registry", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "requestKfrags",
+    functionFragment: "requestPolicy",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "requests", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "verifyingKey",
     data: BytesLike
   ): Result;
 
-  events: {};
+  events: {
+    "KfragsCreated(bytes16,address,bytes)": EventFragment;
+    "PolicyRequested(address,address,string)": EventFragment;
+    "UserRegistered(address,bytes,bytes)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "KfragsCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PolicyRequested"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UserRegistered"): EventFragment;
 }
+
+export type KfragsCreatedEvent = TypedEvent<
+  [string, string, string],
+  { policyId: string; ursula: string; kfrag: string }
+>;
+
+export type KfragsCreatedEventFilter = TypedEventFilter<KfragsCreatedEvent>;
+
+export type PolicyRequestedEvent = TypedEvent<
+  [string, string, string],
+  { requestor: string; recipient: string; label: string }
+>;
+
+export type PolicyRequestedEventFilter = TypedEventFilter<PolicyRequestedEvent>;
+
+export type UserRegisteredEvent = TypedEvent<
+  [string, string, string],
+  { user: string; verifyingKey: string; decryptingKey: string }
+>;
+
+export type UserRegisteredEventFilter = TypedEventFilter<UserRegisteredEvent>;
 
 export interface AbioticAliceManager extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -68,54 +122,226 @@ export interface AbioticAliceManager extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    getVerifyingKey(
-      overrides?: CallOverrides
-    ): Promise<[string] & { _verifyingKey: string }>;
+    createPolicy(
+      _policyId: BytesLike,
+      _endTimestamp: BigNumberish,
+      _nodes: string[],
+      _kfrags: BytesLike[],
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
-    requestKfrags(
-      label: string,
-      bobPk: string,
+    registerMe(
+      _bobVerifyingKey: BytesLike,
+      _bobDecryptingKey: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    registry(
+      arg0: string,
       overrides?: CallOverrides
-    ): Promise<[string]>;
+    ): Promise<
+      [string, string] & { bobVerifyingKey: string; bobDecryptingKey: string }
+    >;
+
+    requestPolicy(
+      _label: string,
+      _recipient: string,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    requests(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, string, BigNumber, string] & {
+        recipient: string;
+        policyOwner: string;
+        timestamp: BigNumber;
+        label: string;
+      }
+    >;
+
+    verifyingKey(overrides?: CallOverrides): Promise<[string]>;
   };
 
-  getVerifyingKey(overrides?: CallOverrides): Promise<string>;
+  createPolicy(
+    _policyId: BytesLike,
+    _endTimestamp: BigNumberish,
+    _nodes: string[],
+    _kfrags: BytesLike[],
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
-  requestKfrags(
-    label: string,
-    bobPk: string,
+  registerMe(
+    _bobVerifyingKey: BytesLike,
+    _bobDecryptingKey: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  registry(
+    arg0: string,
     overrides?: CallOverrides
-  ): Promise<string>;
+  ): Promise<
+    [string, string] & { bobVerifyingKey: string; bobDecryptingKey: string }
+  >;
+
+  requestPolicy(
+    _label: string,
+    _recipient: string,
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  requests(
+    arg0: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, string, BigNumber, string] & {
+      recipient: string;
+      policyOwner: string;
+      timestamp: BigNumber;
+      label: string;
+    }
+  >;
+
+  verifyingKey(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    getVerifyingKey(overrides?: CallOverrides): Promise<string>;
-
-    requestKfrags(
-      label: string,
-      bobPk: string,
+    createPolicy(
+      _policyId: BytesLike,
+      _endTimestamp: BigNumberish,
+      _nodes: string[],
+      _kfrags: BytesLike[],
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<void>;
+
+    registerMe(
+      _bobVerifyingKey: BytesLike,
+      _bobDecryptingKey: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    registry(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, string] & { bobVerifyingKey: string; bobDecryptingKey: string }
+    >;
+
+    requestPolicy(
+      _label: string,
+      _recipient: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    requests(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, string, BigNumber, string] & {
+        recipient: string;
+        policyOwner: string;
+        timestamp: BigNumber;
+        label: string;
+      }
+    >;
+
+    verifyingKey(overrides?: CallOverrides): Promise<string>;
   };
 
-  filters: {};
+  filters: {
+    "KfragsCreated(bytes16,address,bytes)"(
+      policyId?: BytesLike | null,
+      ursula?: null,
+      kfrag?: null
+    ): KfragsCreatedEventFilter;
+    KfragsCreated(
+      policyId?: BytesLike | null,
+      ursula?: null,
+      kfrag?: null
+    ): KfragsCreatedEventFilter;
+
+    "PolicyRequested(address,address,string)"(
+      requestor?: string | null,
+      recipient?: string | null,
+      label?: null
+    ): PolicyRequestedEventFilter;
+    PolicyRequested(
+      requestor?: string | null,
+      recipient?: string | null,
+      label?: null
+    ): PolicyRequestedEventFilter;
+
+    "UserRegistered(address,bytes,bytes)"(
+      user?: string | null,
+      verifyingKey?: null,
+      decryptingKey?: null
+    ): UserRegisteredEventFilter;
+    UserRegistered(
+      user?: string | null,
+      verifyingKey?: null,
+      decryptingKey?: null
+    ): UserRegisteredEventFilter;
+  };
 
   estimateGas: {
-    getVerifyingKey(overrides?: CallOverrides): Promise<BigNumber>;
-
-    requestKfrags(
-      label: string,
-      bobPk: string,
-      overrides?: CallOverrides
+    createPolicy(
+      _policyId: BytesLike,
+      _endTimestamp: BigNumberish,
+      _nodes: string[],
+      _kfrags: BytesLike[],
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    registerMe(
+      _bobVerifyingKey: BytesLike,
+      _bobDecryptingKey: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    registry(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    requestPolicy(
+      _label: string,
+      _recipient: string,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    requests(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+
+    verifyingKey(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    getVerifyingKey(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    createPolicy(
+      _policyId: BytesLike,
+      _endTimestamp: BigNumberish,
+      _nodes: string[],
+      _kfrags: BytesLike[],
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
-    requestKfrags(
-      label: string,
-      bobPk: string,
+    registerMe(
+      _bobVerifyingKey: BytesLike,
+      _bobDecryptingKey: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    registry(
+      arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    requestPolicy(
+      _label: string,
+      _recipient: string,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    requests(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    verifyingKey(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

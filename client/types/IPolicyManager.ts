@@ -77,6 +77,7 @@ export interface IPolicyManagerInterface extends utils.Interface {
   functions: {
     "createPolicy(bytes16,address,uint64,address[])": FunctionFragment;
     "policies(bytes16)": FunctionFragment;
+    "revokePolicy(bytes16)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -84,12 +85,20 @@ export interface IPolicyManagerInterface extends utils.Interface {
     values: [BytesLike, string, BigNumberish, string[]]
   ): string;
   encodeFunctionData(functionFragment: "policies", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "revokePolicy",
+    values: [BytesLike]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "createPolicy",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "policies", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "revokePolicy",
+    data: BytesLike
+  ): Result;
 
   events: {};
 }
@@ -133,6 +142,11 @@ export interface IPolicyManager extends BaseContract {
       _policyId: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    revokePolicy(
+      _policyId: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
   createPolicy(
@@ -144,6 +158,11 @@ export interface IPolicyManager extends BaseContract {
   ): Promise<ContractTransaction>;
 
   policies(
+    _policyId: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  revokePolicy(
     _policyId: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -161,6 +180,11 @@ export interface IPolicyManager extends BaseContract {
       _policyId: BytesLike,
       overrides?: CallOverrides
     ): Promise<PolicyStructOutput>;
+
+    revokePolicy(
+      _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   filters: {};
@@ -178,6 +202,11 @@ export interface IPolicyManager extends BaseContract {
       _policyId: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    revokePolicy(
+      _policyId: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -190,6 +219,11 @@ export interface IPolicyManager extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     policies(
+      _policyId: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    revokePolicy(
       _policyId: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

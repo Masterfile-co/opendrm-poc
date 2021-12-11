@@ -11,11 +11,13 @@ export const getLibrary = (provider: any): Web3Provider => {
 
 export const RPC_URLS: { [chainId: number]: string } = {
   5: "https://goerli.infura.io/v3/81a603725ab7497496a9fbcdea621dc1",
+  1337: "http://0.0.0.0:8545/",
+  31337: "http://0.0.0.0:8545/",
 };
 
 export const network = new NetworkConnector({
-  urls: { 5: RPC_URLS[5] },
-  defaultChainId: 5,
+  urls: { 5: RPC_URLS[5], 1337: RPC_URLS[1337], 31337: RPC_URLS[31337] },
+  defaultChainId: 31337,
 });
 
 export const injected = new InjectedConnector({

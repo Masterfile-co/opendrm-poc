@@ -11,7 +11,9 @@ export function useBob(props: IBob) {
     Bob.fromSecretKey(NuConfig, Buffer.from(props.secretKey))
   );
 
-  console.log("bob key", hexlify(bob.verifyingKey.toBytes()));
+  console.log("bob verify key", bob.verifyingKey.toString());
+  console.log("bob decrypt key",bob.decryptingKey.toString());
+
 
   return {
     decryptingKey: bob.decryptingKey,

@@ -136,6 +136,25 @@ const _abi = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "bytes16",
+        name: "_policyId",
+        type: "bytes16",
+      },
+    ],
+    name: "revokePolicy",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "refundValue",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ];
 
 export class IPolicyManager__factory {

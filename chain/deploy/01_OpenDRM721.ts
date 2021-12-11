@@ -6,14 +6,11 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await getNamedAccounts();
   const { deploy } = deployments;
 
-  const AbioticAlice = await deployments.get("AbioticAliceManager")
+  const AbioticAlice = await deployments.get("AbioticAliceManager");
 
   await deploy("OpenDRM721", {
     from: deployer,
-    args: [
-      "0xaC5e34d3FD41809873968c349d1194D23045b9D2",
-	  AbioticAlice.address
-    ],
+    args: ["0xaC5e34d3FD41809873968c349d1194D23045b9D2", AbioticAlice.address],
     log: true,
     deterministicDeployment: true,
   });

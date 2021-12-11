@@ -2,126 +2,117 @@
 pragma solidity 0.8.4;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {AbioticAliceManager} from "./AbioticAliceManager.sol";
+import {IPolicyManager} from "./IPolicyManager.sol";
+import {LibNuCypher} from "./LibNuCypher.sol";
 
 import "hardhat/console.sol";
 
-interface IPolicyManager {
-    function policies(bytes16 _policyId)
-        external
-        returns (Policy memory policy);
-
-    /**
-     * @notice Create policy
-     * @dev Generate policy id before creation
-     * @param _policyId Policy id
-     * @param _policyOwner Policy owner. Zero address means sender is owner
-     * @param _endTimestamp End timestamp of the policy in seconds
-     * @param _nodes Nodes that will handle policy
-     */
-    function createPolicy(
-        bytes16 _policyId,
-        address _policyOwner,
-        uint64 _endTimestamp,
-        address[] calldata _nodes
-    ) external payable;
-
-    struct ArrangementInfo {
-        address node;
-        uint256 indexOfDowntimePeriods;
-        uint16 lastRefundedPeriod;
-    }
-
-    struct Policy {
-        bool disabled;
-        address payable sponsor;
-        address owner;
-        uint128 feeRate;
-        uint64 startTimestamp;
-        uint64 endTimestamp;
-        uint256 reservedSlot1;
-        uint256 reservedSlot2;
-        uint256 reservedSlot3;
-        uint256 reservedSlot4;
-        uint256 reservedSlot5;
-        ArrangementInfo[] arrangements;
-    }
-}
-
 contract OpenDRM721 is ERC721 {
-    IPolicyManager private PolicyManager;
-    AbioticAliceManager private AbioticAlice;
+    using Strings for uint256;
+    using LibNuCypher for string;
+
+    event PolicyRevoked(bytes16 policyId);
+
+    IPolicyManager private policyManager;
+    AbioticAliceManager private abioticAlice;
+    uint256 private chainId;
 
     mapping(uint256 => string) labels;
 
-    constructor(address _policyManager, address _abioticAlice)
-        ERC721("OpenDRM POC", "ODRM")
-    {
-        PolicyManager = IPolicyManager(_policyManager);
-        AbioticAlice = AbioticAliceManager(_abioticAlice);
+    constructor(
+        IPolicyManager _policyManager,
+        AbioticAliceManager _abioticAlice
+    ) ERC721("OpenDRM POC", "ODRM") {
+        policyManager = _policyManager;
+        abioticAlice = _abioticAlice;
+        uint256 _chainId;
+        assembly {
+            _chainId := chainid()
+        }
+        chainId = _chainId;
     }
 
-    function mint(uint256 tokenId, string memory label) public {
+    function mint(uint256 tokenId) public {
+        string memory label = getLabel(tokenId);
+
         _safeMint(msg.sender, tokenId);
         labels[tokenId] = label;
     }
 
-    function encryptedTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory fromPublicKey,
-        bytes memory toPublicKey,
-        uint64 _endTimestamp,
-        address[] calldata _nodes
-    ) public payable {
-        bytes memory aaVerifyingKey = AbioticAlice.getVerifyingKey();
-        // Deal with previous policy
-        {
-            bytes16 previousPolicyId = bytes16(
-                keccak256(
-                    abi.encodePacked(
-                        aaVerifyingKey,
-                        fromPublicKey,
-                        bytes("label")
-                    )
+    function getLabel(uint256 tokenId)
+        public
+        view
+        returns (string memory label)
+    {
+        // label = contractId-tokenId-chainId
+        return
+            string(
+                abi.encodePacked(
+                    _addressToString(address(this)),
+                    tokenId.toString(),
+                    chainId.toString()
                 )
             );
-            // Check to see if policy is active and we own it
-            // if (
-            //     PolicyManager.policies(previousPolicyId).owner == address(this)
-            // ) {}
-        }
-        // Deal with new policy
-        {
-            bytes16 newPolicyId = bytes16(
-                keccak256(
-                    abi.encodePacked(
-                        aaVerifyingKey,
-                        toPublicKey,
-                        bytes("label")
-                    )
-                )
-            );
-            PolicyManager.createPolicy(
-                newPolicyId,
-                address(this),
-                _endTimestamp,
-                _nodes
-            );
-        }
     }
 
-    function getPolicy(
-        bytes16 _policyId,
-        uint64 _endTimestamp,
-        address[] calldata _nodes
-    ) public payable {
-        PolicyManager.createPolicy{value: msg.value}(
-            _policyId,
-            address(0),
-            _endTimestamp,
-            _nodes
-        );
+    function revokePolicy(bytes16 _policyId) external {
+        policyManager.revokePolicy(_policyId);
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override {
+        string memory label = getLabel(tokenId);
+
+        {
+            // Revoke old policy
+            (bytes memory bobVerifyingKey, ) = abioticAlice.registry(from);
+
+            bytes16 policyId = label.toPolicyId(
+                abioticAlice.verifyingKey(),
+                bobVerifyingKey
+            );
+
+            console.logBytes16(policyId);
+
+            try policyManager.calculateRefundValue(policyId) returns (
+                uint256 refund
+            ) {
+                if (refund > 0) {
+                    policyManager.revokePolicy(policyId);
+                    console.log("Revoke Succeeded");
+                    emit PolicyRevoked(policyId);
+                }
+            } catch Error(string memory _err) {
+                console.log(_err);
+                console.log("Revoke Failed");
+            } catch {
+                console.log("Revoke Failed");
+            }
+        }
+
+        abioticAlice.requestPolicy(label, to);
+    }
+
+    function _addressToString(address addr)
+        internal
+        pure
+        returns (string memory)
+    {
+        bytes32 value = bytes32(uint256(uint160(addr)));
+        bytes memory alphabet = "0123456789abcdef";
+
+        bytes memory str = new bytes(42);
+        str[0] = "0";
+        str[1] = "x";
+        for (uint256 i = 0; i < 20; i++) {
+            str[2 + i * 2] = alphabet[uint8(value[i + 12] >> 4)];
+            str[3 + i * 2] = alphabet[uint8(value[i + 12] & 0x0f)];
+        }
+        return string(str);
     }
 }

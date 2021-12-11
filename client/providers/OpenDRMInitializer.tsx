@@ -28,7 +28,7 @@ export default function OpenDRMInitializer({ children }: { children: any }) {
   }, [library]);
 
   useEffect(() => {
-    activate(connectorsByName[ConnectorNames.Injected]);
+    activate(connectorsByName[ConnectorNames.Network]);
   }, []);
 
   const setAbioticAlice = (provider: Web3Provider) => {

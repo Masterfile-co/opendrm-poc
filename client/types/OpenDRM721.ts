@@ -9,7 +9,6 @@ import {
   CallOverrides,
   ContractTransaction,
   Overrides,
-  PayableOverrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -22,11 +21,10 @@ export interface OpenDRM721Interface extends utils.Interface {
   functions: {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "encryptedTransferFrom(address,address,uint256,bytes,bytes,uint64,address[])": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
-    "getPolicy(bytes16,uint64,address[])": FunctionFragment;
+    "getLabel(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "mint(uint256,string)": FunctionFragment;
+    "mint(uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
@@ -43,33 +41,18 @@ export interface OpenDRM721Interface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(
-    functionFragment: "encryptedTransferFrom",
-    values: [
-      string,
-      string,
-      BigNumberish,
-      BytesLike,
-      BytesLike,
-      BigNumberish,
-      string[]
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getPolicy",
-    values: [BytesLike, BigNumberish, string[]]
+    functionFragment: "getLabel",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [string, string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "mint",
-    values: [BigNumberish, string]
-  ): string;
+  encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "ownerOf",
@@ -100,14 +83,10 @@ export interface OpenDRM721Interface extends utils.Interface {
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "encryptedTransferFrom",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "getPolicy", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getLabel", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
@@ -137,11 +116,13 @@ export interface OpenDRM721Interface extends utils.Interface {
   events: {
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
+    "PolicyRevoked(bytes16)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PolicyRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
@@ -158,6 +139,10 @@ export type ApprovalForAllEvent = TypedEvent<
 >;
 
 export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
+
+export type PolicyRevokedEvent = TypedEvent<[string], { policyId: string }>;
+
+export type PolicyRevokedEventFilter = TypedEventFilter<PolicyRevokedEvent>;
 
 export type TransferEvent = TypedEvent<
   [string, string, BigNumber],
@@ -201,28 +186,15 @@ export interface OpenDRM721 extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    encryptedTransferFrom(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      fromPublicKey: BytesLike,
-      toPublicKey: BytesLike,
-      _endTimestamp: BigNumberish,
-      _nodes: string[],
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    getPolicy(
-      _policyId: BytesLike,
-      _endTimestamp: BigNumberish,
-      _nodes: string[],
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    getLabel(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string] & { label: string }>;
 
     isApprovedForAll(
       owner: string,
@@ -232,7 +204,6 @@ export interface OpenDRM721 extends BaseContract {
 
     mint(
       tokenId: BigNumberish,
-      label: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -292,28 +263,12 @@ export interface OpenDRM721 extends BaseContract {
 
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  encryptedTransferFrom(
-    from: string,
-    to: string,
-    tokenId: BigNumberish,
-    fromPublicKey: BytesLike,
-    toPublicKey: BytesLike,
-    _endTimestamp: BigNumberish,
-    _nodes: string[],
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   getApproved(
     tokenId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getPolicy(
-    _policyId: BytesLike,
-    _endTimestamp: BigNumberish,
-    _nodes: string[],
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  getLabel(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   isApprovedForAll(
     owner: string,
@@ -323,7 +278,6 @@ export interface OpenDRM721 extends BaseContract {
 
   mint(
     tokenId: BigNumberish,
-    label: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -377,28 +331,12 @@ export interface OpenDRM721 extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    encryptedTransferFrom(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      fromPublicKey: BytesLike,
-      toPublicKey: BytesLike,
-      _endTimestamp: BigNumberish,
-      _nodes: string[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getPolicy(
-      _policyId: BytesLike,
-      _endTimestamp: BigNumberish,
-      _nodes: string[],
-      overrides?: CallOverrides
-    ): Promise<void>;
+    getLabel(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
     isApprovedForAll(
       owner: string,
@@ -406,11 +344,7 @@ export interface OpenDRM721 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    mint(
-      tokenId: BigNumberish,
-      label: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    mint(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -477,6 +411,9 @@ export interface OpenDRM721 extends BaseContract {
       approved?: null
     ): ApprovalForAllEventFilter;
 
+    "PolicyRevoked(bytes16)"(policyId?: null): PolicyRevokedEventFilter;
+    PolicyRevoked(policyId?: null): PolicyRevokedEventFilter;
+
     "Transfer(address,address,uint256)"(
       from?: string | null,
       to?: string | null,
@@ -498,27 +435,14 @@ export interface OpenDRM721 extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    encryptedTransferFrom(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      fromPublicKey: BytesLike,
-      toPublicKey: BytesLike,
-      _endTimestamp: BigNumberish,
-      _nodes: string[],
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getPolicy(
-      _policyId: BytesLike,
-      _endTimestamp: BigNumberish,
-      _nodes: string[],
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    getLabel(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     isApprovedForAll(
@@ -529,7 +453,6 @@ export interface OpenDRM721 extends BaseContract {
 
     mint(
       tokenId: BigNumberish,
-      label: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -593,27 +516,14 @@ export interface OpenDRM721 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    encryptedTransferFrom(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      fromPublicKey: BytesLike,
-      toPublicKey: BytesLike,
-      _endTimestamp: BigNumberish,
-      _nodes: string[],
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getPolicy(
-      _policyId: BytesLike,
-      _endTimestamp: BigNumberish,
-      _nodes: string[],
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    getLabel(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     isApprovedForAll(
@@ -624,7 +534,6 @@ export interface OpenDRM721 extends BaseContract {
 
     mint(
       tokenId: BigNumberish,
-      label: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
