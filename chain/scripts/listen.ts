@@ -34,7 +34,7 @@ async function main() {
 
   abioticAliceManager.on(
     policyRequestFilter,
-    async (requestor, recipient, label) => {
+    async (requestor, recipient, threshold, shares, paymentPeriods, label) => {
       const bobKeys = await abioticAliceManager.registry(recipient);
 
       const verifyingKey = PublicKey.fromBytes(
@@ -50,22 +50,21 @@ async function main() {
           verifyingKey,
           decryptingKey,
         },
-        threshold: 2,
-        shares: 3,
-        paymentPeriods: 3,
+        threshold: threshold.toNumber(),
+        shares: shares.toNumber(),
+        paymentPeriods: paymentPeriods.toNumber(),
       });
 
       const _nodes = policy.ursulas.map((ursula) => ursula.checksumAddress);
-      const _kfrags = policy.ursulas.map(
-        (ursula) => `0x${ursula.encryptingKey}`
-      );
+      // const _kfrags = policy.ursulas.map(
+      //   (ursula) => `0x${ursula.encryptingKey}`
+      // );
 
-      const policytx = await abioticAliceManager.createPolicy(
+      const policytx = await abioticAliceManager.fulfillPolicy(
         policy.id.toBytes(),
         policy.expirationTimestamp,
+        policy.valueInWei,
         _nodes,
-        _kfrags,
-        { value: policy.valueInWei }
       );
       await policytx.wait();
 
@@ -76,8 +75,6 @@ async function main() {
       const chainPolicy = await policyManager.policies(policyId);
 
       console.log(chainPolicy);
-
-      // await abioticAliceManager.revokePolicy(policyId);
     }
   );
 }

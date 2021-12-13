@@ -2,7 +2,7 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  const { deployments, getNamedAccounts } = hre;
+  const { deployments, getNamedAccounts, ethers } = hre;
   const { deployer } = await getNamedAccounts();
   const { deploy } = deployments;
 
@@ -14,6 +14,15 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     log: true,
     deterministicDeployment: true,
   });
+
+  const OpenDRM721 = await deployments.get("OpenDRM721");
+  const signer = await ethers.getSigner(deployer);
+
+  signer.sendTransaction({
+    to: OpenDRM721.address,
+    value: ethers.utils.parseEther("1"),
+  });
+  
 };
 
 export default deploy;

@@ -32,7 +32,5 @@
     "typechain": "yarn hardhat typechain",
     "compile": "yarn hardhat compile"
   },
-  "dependencies": {
-
-  }
+  "dependencies": {}
 }

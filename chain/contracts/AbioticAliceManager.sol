@@ -1,29 +1,24 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.4;
 
-import {IPolicyManager} from "./IPolicyManager.sol";
+import {LibNuCypher} from "./LibNuCypher.sol";
+import {OpenDRM721} from "./OpenDRM721.sol";
 
 import "hardhat/console.sol";
 
 contract AbioticAliceManager {
-    struct PolicyRequest {
-        address recipient;
-        address policyOwner;
-        uint256 timestamp;
-        string label;
-    }
+    using LibNuCypher for string;
 
     struct Bob {
         bytes bobVerifyingKey;
         bytes bobDecryptingKey;
     }
 
-    IPolicyManager private policyManager;
     bytes public verifyingKey;
 
     // Mapping from eth address to user verifying key
     mapping(address => Bob) public registry;
-    mapping(bytes16 => PolicyRequest) public requests;
+    mapping(bytes16 => address payable) public policyIdToRequestor;
 
     event UserRegistered(
         address indexed user,
@@ -33,60 +28,69 @@ contract AbioticAliceManager {
     event PolicyRequested(
         address indexed requestor,
         address indexed recipient,
+        uint256 threshold,
+        uint256 shares,
+        uint256 paymentPeriods,
         string label
     );
     event KfragsCreated(bytes16 indexed policyId, address ursula, bytes kfrag);
 
-    constructor(IPolicyManager _policyManager, bytes memory _verifyingKey) {
-        policyManager = _policyManager;
+    constructor(bytes memory _verifyingKey) {
         verifyingKey = _verifyingKey;
     }
 
-    function requestPolicy(string memory _label, address _recipient)
-        public
-        payable
-    {
-        bytes16 policyId = getPolicyId(_label, _recipient);
+    /**
+     * @dev This should require some payment, most likely escrowed until request is fulfilled
+     */
+    function requestPolicy(
+        string memory _labelSuffix,
+        address _recipient,
+        uint256 _threshold,
+        uint256 _shares,
+        uint256 _paymentPeriods
+    ) public payable {
+        require(_threshold <= _shares, "Error: Threshold > shares");
 
-        console.logBytes16(policyId);
+        string memory label = _labelSuffix.toLabel(msg.sender);
 
-        requests[policyId] = PolicyRequest(
-            _recipient,
+        bytes16 policyId = getPolicyId(label, _recipient);
+
+        policyIdToRequestor[policyId] = payable(msg.sender);
+
+        emit PolicyRequested(
             msg.sender,
-            block.timestamp,
-            _label
+            _recipient,
+            _threshold,
+            _shares,
+            _paymentPeriods,
+            label
         );
-
-        emit PolicyRequested(msg.sender, _recipient, _label);
     }
 
     /**
      * @dev TODO: onlyOwner
      */
-    function createPolicy(
+    function fulfillPolicy(
         bytes16 _policyId,
         uint64 _endTimestamp,
-        address[] calldata _nodes,
-        bytes[] calldata _kfrags
+        uint256 _valueInWei,
+        address[] calldata _nodes
     ) public payable {
         // TODO: request validation
-
-        policyManager.createPolicy{value: msg.value}(
+        address payable requestor = policyIdToRequestor[_policyId];
+        require(requestor != address(0), "Error: Invalid policyId");
+        OpenDRM721(policyIdToRequestor[_policyId]).fulfillPolicy(
             _policyId,
-            requests[_policyId].policyOwner,
             _endTimestamp,
+            _valueInWei,
             _nodes
         );
-
-        for (uint256 i; i < _nodes.length; i++) {
-            emit KfragsCreated(_policyId, _nodes[i], _kfrags[i]);
-        }
     }
 
-    // function revokePolicy(bytes16 _policyId) public {
-    //     uint256 refund = policyManager.revokePolicy(_policyId);
-    // }
-
+    /**
+     * @notice Quick and dirty way to map eth material -> PRE material.
+     * @dev Would be very nice to get rid of this step and have determanistic mapping
+     */
     function registerMe(
         bytes calldata _bobVerifyingKey,
         bytes calldata _bobDecryptingKey
@@ -101,18 +105,9 @@ contract AbioticAliceManager {
         returns (bytes16 _policyId)
     {
         return
-            bytes16(
-                keccak256(
-                    abi.encodePacked(
-                        verifyingKey,
-                        registry[_recipient].bobVerifyingKey,
-                        bytes(_label)
-                    )
-                )
+            _label.toPolicyId(
+                verifyingKey,
+                registry[_recipient].bobVerifyingKey
             );
-    }
-
-    receive() external payable {
-        console.log(msg.value);
     }
 }

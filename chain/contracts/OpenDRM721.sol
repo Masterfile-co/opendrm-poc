@@ -19,7 +19,15 @@ contract OpenDRM721 is ERC721 {
     AbioticAliceManager private abioticAlice;
     uint256 private chainId;
 
-    mapping(uint256 => string) labels;
+    mapping(bytes16 => bool) validPolicy;
+
+    modifier onlyAlice() {
+        require(
+            msg.sender == address(abioticAlice),
+            "Only callable by AbioticAliceManager"
+        );
+        _;
+    }
 
     constructor(
         IPolicyManager _policyManager,
@@ -35,30 +43,15 @@ contract OpenDRM721 is ERC721 {
     }
 
     function mint(uint256 tokenId) public {
-        string memory label = getLabel(tokenId);
-
         _safeMint(msg.sender, tokenId);
-        labels[tokenId] = label;
     }
 
-    function getLabel(uint256 tokenId)
+    function getFullLabel(uint256 tokenId)
         public
         view
         returns (string memory label)
     {
-        // label = contractId-tokenId-chainId
-        return
-            string(
-                abi.encodePacked(
-                    _addressToString(address(this)),
-                    tokenId.toString(),
-                    chainId.toString()
-                )
-            );
-    }
-
-    function revokePolicy(bytes16 _policyId) external {
-        policyManager.revokePolicy(_policyId);
+        return tokenId.toString().toLabel(address(this));
     }
 
     function getPolicy(bytes16 _policyId)
@@ -69,24 +62,47 @@ contract OpenDRM721 is ERC721 {
         return policyManager.policies(_policyId);
     }
 
+    function fulfillPolicy(
+        bytes16 _policyId,
+        uint64 _endTimestamp,
+        uint256 _valueInWei,
+        address[] calldata _nodes
+    ) external payable onlyAlice {
+        // If token gets transfered multiple times before policy is fulfilled,
+        // only actually create a policy for the last holder
+
+        if (validPolicy[_policyId]) {
+            // Should potentially do some verification of _valueInWei here so we dont have to trust Alice totally
+
+            policyManager.createPolicy{value: _valueInWei}(
+                _policyId,
+                address(0),
+                _endTimestamp,
+                _nodes
+            );
+            console.log("Policy fulfilled");
+        }
+    }
+
     function _beforeTokenTransfer(
         address from,
         address to,
         uint256 tokenId
     ) internal override {
-        string memory label = getLabel(tokenId);
+        string memory label = getFullLabel(tokenId);
 
+        bytes memory aliceVerifyingKey = abioticAlice.verifyingKey();
+        bytes16 policyId;
         {
             // Revoke old policy
-            (bytes memory bobVerifyingKey, ) = abioticAlice.registry(from);
+            (bytes memory fromVerifyingKey, ) = abioticAlice.registry(from);
 
-            bytes16 policyId = label.toPolicyId(
-                abioticAlice.verifyingKey(),
-                bobVerifyingKey
-            );
+            policyId = label.toPolicyId(aliceVerifyingKey, fromVerifyingKey);
+            validPolicy[policyId] = false;
 
             console.logBytes16(policyId);
 
+            // TODO: make a request to check if policy is valid instead of blindly revoking
             try policyManager.revokePolicy(policyId) returns (uint256 refund) {
                 console.log("Revoke Succeeded, Refund:");
                 console.log(refund);
@@ -98,8 +114,16 @@ contract OpenDRM721 is ERC721 {
                 console.log("Revoke Failed");
             }
         }
+        {
+            // Handle new policy
+            (bytes memory toVerifyingKey, ) = abioticAlice.registry(to);
 
-        abioticAlice.requestPolicy(label, to);
+            policyId = label.toPolicyId(aliceVerifyingKey, toVerifyingKey);
+            validPolicy[policyId] = true;
+
+            // Hardcoding policy details for now
+            abioticAlice.requestPolicy(tokenId.toString(), to, 2, 3, 3);
+        }
     }
 
     function _addressToString(address addr)
@@ -119,4 +143,6 @@ contract OpenDRM721 is ERC721 {
         }
         return string(str);
     }
+
+    receive() external payable {}
 }
