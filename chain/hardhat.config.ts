@@ -28,6 +28,11 @@ const config: HardhatUserConfig = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    hardhat: {
+      // mining: {
+      //   interval: 2000,
+      // },
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
@@ -39,6 +44,15 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       default: 0,
+    },
+    alice: {
+      default: 1,
+    },
+    bob: {
+      default: 2,
+    },
+    charlie: {
+      default: 3,
     },
   },
   typechain: {

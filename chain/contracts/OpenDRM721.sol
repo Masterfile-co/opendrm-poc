@@ -61,6 +61,14 @@ contract OpenDRM721 is ERC721 {
         policyManager.revokePolicy(_policyId);
     }
 
+    function getPolicy(bytes16 _policyId)
+        public
+        view
+        returns (IPolicyManager.Policy memory _policy)
+    {
+        return policyManager.policies(_policyId);
+    }
+
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -79,14 +87,10 @@ contract OpenDRM721 is ERC721 {
 
             console.logBytes16(policyId);
 
-            try policyManager.calculateRefundValue(policyId) returns (
-                uint256 refund
-            ) {
-                if (refund > 0) {
-                    policyManager.revokePolicy(policyId);
-                    console.log("Revoke Succeeded");
-                    emit PolicyRevoked(policyId);
-                }
+            try policyManager.revokePolicy(policyId) returns (uint256 refund) {
+                console.log("Revoke Succeeded, Refund:");
+                console.log(refund);
+                emit PolicyRevoked(policyId);
             } catch Error(string memory _err) {
                 console.log(_err);
                 console.log("Revoke Failed");

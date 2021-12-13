@@ -69,7 +69,6 @@ contract AbioticAliceManager {
         address[] calldata _nodes,
         bytes[] calldata _kfrags
     ) public payable {
-
         // TODO: request validation
 
         policyManager.createPolicy{value: msg.value}(
@@ -84,6 +83,10 @@ contract AbioticAliceManager {
         }
     }
 
+    // function revokePolicy(bytes16 _policyId) public {
+    //     uint256 refund = policyManager.revokePolicy(_policyId);
+    // }
+
     function registerMe(
         bytes calldata _bobVerifyingKey,
         bytes calldata _bobDecryptingKey
@@ -97,10 +100,6 @@ contract AbioticAliceManager {
         view
         returns (bytes16 _policyId)
     {
-        console.logBytes(verifyingKey);
-        console.logBytes(registry[_recipient].bobVerifyingKey);
-        
-
         return
             bytes16(
                 keccak256(
@@ -111,5 +110,9 @@ contract AbioticAliceManager {
                     )
                 )
             );
+    }
+
+    receive() external payable {
+        console.log(msg.value);
     }
 }

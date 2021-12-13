@@ -31,6 +31,15 @@ interface IPolicyManager {
         view
         returns (uint256 refundValue);
 
+    function getArrangementsLength(bytes16 _policyId)
+        external
+        view
+        returns (uint256);
+
+    function revokeArrangement(bytes16 _policyId, address _node)
+        external
+        returns (uint256 refundValue);
+
     struct ArrangementInfo {
         address node;
         uint256 indexOfDowntimePeriods;
@@ -49,6 +58,7 @@ interface IPolicyManager {
         uint256 reservedSlot3;
         uint256 reservedSlot4;
         uint256 reservedSlot5;
-        ArrangementInfo[] arrangements;
     }
+
+    function getCurrentPeriod() external view returns (uint16);
 }

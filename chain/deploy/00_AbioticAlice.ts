@@ -18,19 +18,6 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     deterministicDeployment: true,
   });
 
-  // Use signer1 as bob
-  const abioticAliceDeployment = await deployments.get("AbioticAliceManager");
-
-  const abioticAlice = AbioticAliceManager__factory.connect(
-    abioticAliceDeployment.address,
-    signers[1]
-  );
-
-  // register our bob
-  // await abioticAlice.registerMe(
-  //   "0x02de7992c291623f4d4fad3ce16706e6492f1f5e345f7f19f38c92cd0b6e0aff09",
-  //   "0x02de7992c291623f4d4fad3ce16706e6492f1f5e345f7f19f38c92cd0b6e0aff09"
-  // );
 };
 
 export default deploy;

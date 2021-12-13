@@ -18,9 +18,9 @@ async function main() {
     signers[0]
   );
 
-  const tx = await policyManager.policies("");
+  const res = await policyManager.policies("0x8bbd46c563dedd210b62fe3acf42d65b");
 
-  const res = await tx.wait();
+//   const res = await tx.wait();
 
   console.log(res);
 }

@@ -16,6 +16,15 @@ listen:
 transfer:
 	yarn hardhat run scripts/transfer.ts --network localhost
 
+mint:
+	yarn hardhat run scripts/mint.ts --network localhost
+
+revoke:
+	yarn hardhat run scripts/revoke.ts --network localhost
+
+getPolicy:
+	yarn hardhat run scripts/getPolicy.ts --network localhost
+
 typechain:
 	yarn hardhat typechain 
 
