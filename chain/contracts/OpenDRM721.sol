@@ -99,7 +99,7 @@ contract OpenDRM721 is ERC721 {
 
             policyId = label.toPolicyId(aliceVerifyingKey, fromVerifyingKey);
             validPolicy[policyId] = false;
-
+            console.log("Previous Policy");
             console.logBytes16(policyId);
 
             // TODO: make a request to check if policy is valid instead of blindly revoking
@@ -119,6 +119,8 @@ contract OpenDRM721 is ERC721 {
             (bytes memory toVerifyingKey, ) = abioticAlice.registry(to);
 
             policyId = label.toPolicyId(aliceVerifyingKey, toVerifyingKey);
+            console.log("New Policy");
+            console.logBytes16(policyId);
             validPolicy[policyId] = true;
 
             // Hardcoding policy details for now

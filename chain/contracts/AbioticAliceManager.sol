@@ -33,7 +33,6 @@ contract AbioticAliceManager {
         uint256 paymentPeriods,
         string label
     );
-    event KfragsCreated(bytes16 indexed policyId, address ursula, bytes kfrag);
 
     constructor(bytes memory _verifyingKey) {
         verifyingKey = _verifyingKey;
@@ -54,6 +53,9 @@ contract AbioticAliceManager {
         string memory label = _labelSuffix.toLabel(msg.sender);
 
         bytes16 policyId = getPolicyId(label, _recipient);
+
+        console.log("Policy requested with:");
+        console.logBytes16(policyId);
 
         policyIdToRequestor[policyId] = payable(msg.sender);
 

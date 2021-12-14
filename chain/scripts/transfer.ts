@@ -4,15 +4,11 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { deployments, ethers, getNamedAccounts } from "hardhat";
-import { Bob } from "nucypher-ts";
 import {
-  AbioticAliceManager__factory,
-  OpenDRM721,
   OpenDRM721__factory,
 } from "../types";
 
 async function main() {
-  const signers = await ethers.getSigners();
   const { bob, charlie } = await getNamedAccounts();
 
   // return;
@@ -23,7 +19,7 @@ async function main() {
     await ethers.getSigner(bob)
   );
 
-  const tx = await openDRM.transferFrom(bob, charlie, 1);
+  const tx = await openDRM.transferFrom(bob, charlie, 2);
 
   const res = await tx.wait();
 
