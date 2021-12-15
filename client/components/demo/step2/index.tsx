@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 interface Step2 {
   registerUser: (secretKey: string) => void;
-  done: boolean
+  done: boolean;
 }
 
 export default function Step2(props: Step2) {
@@ -28,11 +28,14 @@ export default function Step2(props: Step2) {
               className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
+          <p className="mt-2 text-sm text-red-600" id="email-error">
+            Not stored securely, don't use real password
+          </p>
         </div>
         <PrimaryButton
           onClick={() => {
             props.registerUser(ps);
-            setPs("")
+            setPs("");
           }}
           disabled={props.done}
         >

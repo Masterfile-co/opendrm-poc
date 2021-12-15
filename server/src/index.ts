@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 import { Wallet, providers, utils } from "ethers";
 import { Alice, EnactedPolicy, PublicKey } from "nucypher-ts";
 import { AbioticAliceManager__factory } from "./types";
@@ -14,6 +15,7 @@ const NuConfig = {
 };
 
 const app = express();
+app.use(cors());
 const port = process.env.PORT || 3001;
 
 const provider = new providers.JsonRpcProvider("http://0.0.0.0:8545/");
@@ -102,8 +104,19 @@ app.get("/policy", (req, res) => {
   if (policy) {
     res.send(JSON.stringify(policy, null, 4));
   } else {
-    res.status(404).send("No enacted policy")
+    res.status(404).send("No enacted policy");
   }
+});
+
+app.get("/verifyingKey", (req, res) => {
+  res.send(Buffer.from(nuAlice.verifyingKey.toBytes()));
+});
+
+app.get("/encryptingKey", (req, res) => {
+  const label = req.query.label as string;
+  const encryptingKey = nuAlice.getPolicyEncryptingKeyFromLabel(label);
+
+  res.send(Buffer.from(encryptingKey.toBytes()));
 });
 
 app.listen(port, () => {

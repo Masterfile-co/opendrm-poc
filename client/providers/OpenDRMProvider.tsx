@@ -1,20 +1,20 @@
 import React from "react";
 import { Web3ReactProvider } from "@web3-react/core";
-import OpenDRMInitializer from "./OpenDRMInitializer";
+import OpenDRMInitializer from "./NetworkInitializer";
 import dynamic from "next/dynamic";
 import { getLibrary } from "utils/connectors";
+import NetworkInitalizer from "./NetworkInitializer";
 
-const AbioticAliceWeb3Provider = dynamic(
-  () => import("./AbioticAliceWeb3Provider"),
-  { ssr: false }
-);
+const NetworkProvider = dynamic(() => import("./NetworkProvider"), {
+  ssr: false,
+});
 
 export default function OpenDRMProvider({ children }: { children: any }) {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <AbioticAliceWeb3Provider getLibrary={getLibrary}>
-        <OpenDRMInitializer>{children}</OpenDRMInitializer>
-      </AbioticAliceWeb3Provider>
+      <NetworkProvider getLibrary={getLibrary}>
+        <NetworkInitalizer>{children}</NetworkInitalizer>
+      </NetworkProvider>
     </Web3ReactProvider>
   );
 }

@@ -14,7 +14,7 @@ export default function Step3(props: Step3) {
   const [cleartext, setCleartext] = useState("");
 
   return (
-    <StepCard stepNumber={3} stepTitle="Encrypt Metadata">
+    <StepCard stepNumber={3} stepTitle="Encrypt Metadata and Mint">
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700">

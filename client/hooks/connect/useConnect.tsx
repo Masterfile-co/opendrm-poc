@@ -8,7 +8,6 @@ export function useConnect() {
 
   const requestConnection = async (name: ConnectorNames) => {
     await activate(connectorsByName[name]);
-    localStorage.setItem("connector", name.toString());
   };
 
   useEffect(() => {

@@ -2,77 +2,42 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Alice, BlockchainPolicyParameters, PublicKey } from "nucypher-ts";
 import { Web3Provider } from "@ethersproject/providers";
 import { hexlify } from "ethers/lib/utils";
+import { AbioticAliceManager__factory } from "types";
+import axios from "axios";
 
 export function useAbioticAlice() {
-  const { abioticAlice } = useContext(AbioticAliceContext);
-  const [publicKey, setPublicKey] = useState<PublicKey | undefined>(undefined);
-
-  useEffect(() => {
-    if (abioticAlice) {
-      setPublicKey(abioticAlice.verifyingKey);
-      console.log(hexlify(abioticAlice.verifyingKey.toBytes()));
-    }
-  }, [abioticAlice]);
-
-  /**
-   * Request Alice to create a policy
-   * @param policyParams
-   * @param includeUrsulas
-   * @param excludeUrsulas
-   * @returns policyId
-   */
-  const requestPolicy = async (
-    policyParams: BlockchainPolicyParameters,
-    includeUrsulas?: string[],
-    excludeUrsulas?: string[]
-  ) => {
-    if (!abioticAlice) {
-      throw "Abiotic Alice not initiated";
-    }
-
-    return await abioticAlice.generatePolicy(
-      policyParams,
-      includeUrsulas,
-      excludeUrsulas
-    );
-  };
-
-  const grantPolicy = async (
-    policyParams: BlockchainPolicyParameters,
-    includeUrsulas?: string[],
-    excludeUrsulas?: string[]
-  ) => {
-    if (!abioticAlice) {
-      throw "Abiotic Alice not initiated";
-    }
-    return await abioticAlice.grant(
-      policyParams,
-      includeUrsulas,
-      excludeUrsulas
-    );
-  };
-
-  // const requestRevoke = async (policyId: Uint8Array) => {
-  //   if (!abioticAlice) {
-  //     throw "Abiotic Alice not initiated";
+  // useEffect(() => {
+  //   if (abioticAlice) {
+  //     setPublicKey(abioticAlice.verifyingKey);
+  //     console.log(hexlify(abioticAlice.verifyingKey.toBytes()));
   //   }
+  // }, [abioticAlice]);
 
-  //   await abioticAlice.revoke(policyId);
-  // };
-
-  const requestEncryptingKey = (label: string) => {
-    if (!abioticAlice) {
-      throw "Abiotic Alice not initiated";
-    }
-
-    return abioticAlice.getPolicyEncryptingKeyFromLabel(label);
+  const getVerifyingKey = async () => {
+    return axios
+      .get("http://localhost:3001/verifyingKey", {
+        responseType: "arraybuffer",
+      })
+      .then(({ data }) => {
+        return PublicKey.fromBytes(new Uint8Array(data));
+      });
   };
+
+  const getEncryptingKey = async (label: string) => {
+    return axios
+      .get(`http://localhost:3001/encryptingKey?label=${label}`, {
+        responseType: "arraybuffer",
+      })
+      .then(({ data }) => {
+        return PublicKey.fromBytes(new Uint8Array(data));
+      });
+  };
+
+  const getPolicy = async () => {};
 
   return {
-    publicKey,
-    requestPolicy,
-    grantPolicy,
-    requestEncryptingKey,
+    getEncryptingKey,
+    getVerifyingKey,
   };
 }
 

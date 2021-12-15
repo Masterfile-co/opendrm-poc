@@ -91,6 +91,9 @@ contract OpenDRM721 is ERC721 {
     ) internal override {
         string memory label = getFullLabel(tokenId);
 
+        console.log("Policy Label:");
+        console.log(label);
+
         bytes memory aliceVerifyingKey = abioticAlice.verifyingKey();
         bytes16 policyId;
         {

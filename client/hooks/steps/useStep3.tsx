@@ -10,19 +10,17 @@ const { hexlify } = utils;
 interface Step3 {
   metadata: Metadata;
   setMetadata: (metadata: Metadata) => void;
-
 }
 
 export function useStep3(props: Step3) {
   const { metadata, setMetadata } = props;
   const [done, setDone] = useState(false);
-  const { requestEncryptingKey } = useAbioticAlice();
+  const { getEncryptingKey } = useAbioticAlice();
 
-  const encryptMetadata = (tokenId: number, cleartext: string) => {
+  const encryptMetadata = async (tokenId: number, cleartext: string) => {
     // generate label
-    const label = OPENDRM721_ADDRESS + tokenId.toString() + "31337";
-
-    const encryptingKey = requestEncryptingKey(label);
+    const label = OPENDRM721_ADDRESS + "31337" + tokenId.toString();
+    const encryptingKey = await getEncryptingKey(label);
     const { encryptMessage } = useEnrico({ encryptingKey });
 
     const messageKit = encryptMessage(cleartext);

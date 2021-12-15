@@ -1,6 +1,5 @@
 import { PrimaryButton } from "components/Button";
 import StepCard from "components/StepCard";
-import { useConnect } from "hooks/connect/useConnect";
 import React from "react";
 import { ConnectorNames } from "utils/connectors";
 
