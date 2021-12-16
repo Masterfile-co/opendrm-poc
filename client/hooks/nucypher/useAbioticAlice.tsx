@@ -1,9 +1,18 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Alice, BlockchainPolicyParameters, PublicKey } from "nucypher-ts";
+import {
+  Alice,
+  BlockchainPolicyParameters,
+  Bob,
+  EnactedPolicy,
+  PublicKey,
+} from "nucypher-ts";
 import { Web3Provider } from "@ethersproject/providers";
 import { hexlify } from "ethers/lib/utils";
 import { AbioticAliceManager__factory } from "types";
 import axios from "axios";
+import sha3 from "js-sha3";
+import { utils } from "ethers";
+import { HRAC } from "nucypher-ts/build/main/src/policies/hrac";
 
 export function useAbioticAlice() {
   // useEffect(() => {
@@ -13,6 +22,10 @@ export function useAbioticAlice() {
   //   }
   // }, [abioticAlice]);
 
+  /**
+   * Get Alice's verfying key
+   * @returns Alice's verfiying key
+   */
   const getVerifyingKey = async () => {
     return axios
       .get("http://localhost:3001/verifyingKey", {
@@ -23,6 +36,11 @@ export function useAbioticAlice() {
       });
   };
 
+  /**
+   * Get the key to encrypt cleartext so that policy holder can access
+   * @param label label of policy
+   * @returns encrypting key for policy
+   */
   const getEncryptingKey = async (label: string) => {
     return axios
       .get(`http://localhost:3001/encryptingKey?label=${label}`, {
@@ -33,20 +51,33 @@ export function useAbioticAlice() {
       });
   };
 
-  const getPolicy = async () => {};
+  const getPolicyId = async (label: string, bob: Bob) => {
+    const bobVerifyingKey = utils.hexlify(bob.verifyingKey.toBytes());
+
+    return axios
+      .get(
+        `http://localhost:3001/policyId?label=${label}&verifyingKey=${bobVerifyingKey}`
+      )
+      .then((res) => {
+        return res.data.policyId;
+      });
+
+    // return res.data.policyId;
+  };
+
+  const getPolicy = async (policyId: string) => {
+    return axios
+      .get(`http://localhost:3001/policy?policyId=${policyId}`)
+      .then((res) => {
+        const policy = res.data as EnactedPolicy;
+        return policy;
+      });
+  };
 
   return {
     getEncryptingKey,
     getVerifyingKey,
+    getPolicyId,
+    getPolicy,
   };
 }
-
-export interface AbioticAliceProps {
-  abioticAlice: Alice | undefined;
-  setAbioticAlice: (provider: Web3Provider) => void;
-}
-
-export const AbioticAliceContext = createContext<AbioticAliceProps>({
-  abioticAlice: undefined,
-  setAbioticAlice: () => {},
-});

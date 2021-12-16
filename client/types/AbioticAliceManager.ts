@@ -20,17 +20,21 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export interface AbioticAliceManagerInterface extends utils.Interface {
   functions: {
-    "createPolicy(bytes16,uint64,address[],bytes[])": FunctionFragment;
+    "fulfillPolicy(bytes16,uint64,uint256,address[])": FunctionFragment;
+    "policyIdToRequestor(bytes16)": FunctionFragment;
     "registerMe(bytes,bytes)": FunctionFragment;
     "registry(address)": FunctionFragment;
-    "requestPolicy(string,address)": FunctionFragment;
-    "requests(bytes16)": FunctionFragment;
+    "requestPolicy(string,address,uint256,uint256,uint256)": FunctionFragment;
     "verifyingKey()": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "createPolicy",
-    values: [BytesLike, BigNumberish, string[], BytesLike[]]
+    functionFragment: "fulfillPolicy",
+    values: [BytesLike, BigNumberish, BigNumberish, string[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "policyIdToRequestor",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "registerMe",
@@ -39,16 +43,19 @@ export interface AbioticAliceManagerInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "registry", values: [string]): string;
   encodeFunctionData(
     functionFragment: "requestPolicy",
-    values: [string, string]
+    values: [string, string, BigNumberish, BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "requests", values: [BytesLike]): string;
   encodeFunctionData(
     functionFragment: "verifyingKey",
     values?: undefined
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "createPolicy",
+    functionFragment: "fulfillPolicy",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "policyIdToRequestor",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "registerMe", data: BytesLike): Result;
@@ -57,33 +64,30 @@ export interface AbioticAliceManagerInterface extends utils.Interface {
     functionFragment: "requestPolicy",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "requests", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "verifyingKey",
     data: BytesLike
   ): Result;
 
   events: {
-    "KfragsCreated(bytes16,address,bytes)": EventFragment;
-    "PolicyRequested(address,address,string)": EventFragment;
+    "PolicyRequested(address,address,uint256,uint256,uint256,string)": EventFragment;
     "UserRegistered(address,bytes,bytes)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "KfragsCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PolicyRequested"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UserRegistered"): EventFragment;
 }
 
-export type KfragsCreatedEvent = TypedEvent<
-  [string, string, string],
-  { policyId: string; ursula: string; kfrag: string }
->;
-
-export type KfragsCreatedEventFilter = TypedEventFilter<KfragsCreatedEvent>;
-
 export type PolicyRequestedEvent = TypedEvent<
-  [string, string, string],
-  { requestor: string; recipient: string; label: string }
+  [string, string, BigNumber, BigNumber, BigNumber, string],
+  {
+    requestor: string;
+    recipient: string;
+    threshold: BigNumber;
+    shares: BigNumber;
+    paymentPeriods: BigNumber;
+    label: string;
+  }
 >;
 
 export type PolicyRequestedEventFilter = TypedEventFilter<PolicyRequestedEvent>;
@@ -122,13 +126,18 @@ export interface AbioticAliceManager extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    createPolicy(
+    fulfillPolicy(
       _policyId: BytesLike,
       _endTimestamp: BigNumberish,
+      _valueInWei: BigNumberish,
       _nodes: string[],
-      _kfrags: BytesLike[],
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    policyIdToRequestor(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     registerMe(
       _bobVerifyingKey: BytesLike,
@@ -144,33 +153,29 @@ export interface AbioticAliceManager extends BaseContract {
     >;
 
     requestPolicy(
-      _label: string,
+      _labelSuffix: string,
       _recipient: string,
+      _threshold: BigNumberish,
+      _shares: BigNumberish,
+      _paymentPeriods: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    requests(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, string, BigNumber, string] & {
-        recipient: string;
-        policyOwner: string;
-        timestamp: BigNumber;
-        label: string;
-      }
-    >;
 
     verifyingKey(overrides?: CallOverrides): Promise<[string]>;
   };
 
-  createPolicy(
+  fulfillPolicy(
     _policyId: BytesLike,
     _endTimestamp: BigNumberish,
+    _valueInWei: BigNumberish,
     _nodes: string[],
-    _kfrags: BytesLike[],
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  policyIdToRequestor(
+    arg0: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   registerMe(
     _bobVerifyingKey: BytesLike,
@@ -186,33 +191,29 @@ export interface AbioticAliceManager extends BaseContract {
   >;
 
   requestPolicy(
-    _label: string,
+    _labelSuffix: string,
     _recipient: string,
+    _threshold: BigNumberish,
+    _shares: BigNumberish,
+    _paymentPeriods: BigNumberish,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  requests(
-    arg0: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<
-    [string, string, BigNumber, string] & {
-      recipient: string;
-      policyOwner: string;
-      timestamp: BigNumber;
-      label: string;
-    }
-  >;
 
   verifyingKey(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    createPolicy(
+    fulfillPolicy(
       _policyId: BytesLike,
       _endTimestamp: BigNumberish,
+      _valueInWei: BigNumberish,
       _nodes: string[],
-      _kfrags: BytesLike[],
       overrides?: CallOverrides
     ): Promise<void>;
+
+    policyIdToRequestor(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     registerMe(
       _bobVerifyingKey: BytesLike,
@@ -228,46 +229,32 @@ export interface AbioticAliceManager extends BaseContract {
     >;
 
     requestPolicy(
-      _label: string,
+      _labelSuffix: string,
       _recipient: string,
+      _threshold: BigNumberish,
+      _shares: BigNumberish,
+      _paymentPeriods: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    requests(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, string, BigNumber, string] & {
-        recipient: string;
-        policyOwner: string;
-        timestamp: BigNumber;
-        label: string;
-      }
-    >;
 
     verifyingKey(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
-    "KfragsCreated(bytes16,address,bytes)"(
-      policyId?: BytesLike | null,
-      ursula?: null,
-      kfrag?: null
-    ): KfragsCreatedEventFilter;
-    KfragsCreated(
-      policyId?: BytesLike | null,
-      ursula?: null,
-      kfrag?: null
-    ): KfragsCreatedEventFilter;
-
-    "PolicyRequested(address,address,string)"(
+    "PolicyRequested(address,address,uint256,uint256,uint256,string)"(
       requestor?: string | null,
       recipient?: string | null,
+      threshold?: null,
+      shares?: null,
+      paymentPeriods?: null,
       label?: null
     ): PolicyRequestedEventFilter;
     PolicyRequested(
       requestor?: string | null,
       recipient?: string | null,
+      threshold?: null,
+      shares?: null,
+      paymentPeriods?: null,
       label?: null
     ): PolicyRequestedEventFilter;
 
@@ -284,12 +271,17 @@ export interface AbioticAliceManager extends BaseContract {
   };
 
   estimateGas: {
-    createPolicy(
+    fulfillPolicy(
       _policyId: BytesLike,
       _endTimestamp: BigNumberish,
+      _valueInWei: BigNumberish,
       _nodes: string[],
-      _kfrags: BytesLike[],
       overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    policyIdToRequestor(
+      arg0: BytesLike,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     registerMe(
@@ -301,23 +293,29 @@ export interface AbioticAliceManager extends BaseContract {
     registry(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     requestPolicy(
-      _label: string,
+      _labelSuffix: string,
       _recipient: string,
+      _threshold: BigNumberish,
+      _shares: BigNumberish,
+      _paymentPeriods: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    requests(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     verifyingKey(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    createPolicy(
+    fulfillPolicy(
       _policyId: BytesLike,
       _endTimestamp: BigNumberish,
+      _valueInWei: BigNumberish,
       _nodes: string[],
-      _kfrags: BytesLike[],
       overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    policyIdToRequestor(
+      arg0: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     registerMe(
@@ -332,14 +330,12 @@ export interface AbioticAliceManager extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     requestPolicy(
-      _label: string,
+      _labelSuffix: string,
       _recipient: string,
+      _threshold: BigNumberish,
+      _shares: BigNumberish,
+      _paymentPeriods: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    requests(
-      arg0: BytesLike,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     verifyingKey(overrides?: CallOverrides): Promise<PopulatedTransaction>;

@@ -4,13 +4,13 @@ import React, { useState } from "react";
 
 interface Step3 {
   done: boolean;
-  encryptMetadata: (tokenId: number, cleartext: string) => void;
+  encryptAndMint: (cleartext: string) => void;
   tokenId: number;
   setTokenId: (tokenId: number) => void;
 }
 
 export default function Step3(props: Step3) {
-  const { tokenId, setTokenId } = props;
+  const { tokenId, setTokenId, done } = props;
   const [cleartext, setCleartext] = useState("");
 
   return (
@@ -25,6 +25,7 @@ export default function Step3(props: Step3) {
               id="tokenId"
               name="tokenId"
               type="number"
+              disabled={done}
               value={tokenId}
               onChange={(e) => setTokenId(parseInt(e.target.value))}
               required
@@ -41,6 +42,7 @@ export default function Step3(props: Step3) {
               id="cleartext"
               name="cleartext"
               type="cleartext"
+              disabled={done}
               value={cleartext}
               onChange={(e) => setCleartext(e.target.value)}
               required
@@ -50,10 +52,11 @@ export default function Step3(props: Step3) {
         </div>
         <PrimaryButton
           onClick={() => {
-            props.encryptMetadata(tokenId, cleartext);
+            props.encryptAndMint(cleartext);
           }}
+          disabled={props.done}
         >
-          Encrypt
+          Encrypt And Mint
         </PrimaryButton>
       </div>
     </StepCard>

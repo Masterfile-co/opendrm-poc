@@ -18,18 +18,6 @@ import { FunctionFragment, Result } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
-export type ArrangementInfoStruct = {
-  node: string;
-  indexOfDowntimePeriods: BigNumberish;
-  lastRefundedPeriod: BigNumberish;
-};
-
-export type ArrangementInfoStructOutput = [string, BigNumber, number] & {
-  node: string;
-  indexOfDowntimePeriods: BigNumber;
-  lastRefundedPeriod: number;
-};
-
 export type PolicyStruct = {
   disabled: boolean;
   sponsor: string;
@@ -42,7 +30,6 @@ export type PolicyStruct = {
   reservedSlot3: BigNumberish;
   reservedSlot4: BigNumberish;
   reservedSlot5: BigNumberish;
-  arrangements: ArrangementInfoStruct[];
 };
 
 export type PolicyStructOutput = [
@@ -56,8 +43,7 @@ export type PolicyStructOutput = [
   BigNumber,
   BigNumber,
   BigNumber,
-  BigNumber,
-  ArrangementInfoStructOutput[]
+  BigNumber
 ] & {
   disabled: boolean;
   sponsor: string;
@@ -70,31 +56,66 @@ export type PolicyStructOutput = [
   reservedSlot3: BigNumber;
   reservedSlot4: BigNumber;
   reservedSlot5: BigNumber;
-  arrangements: ArrangementInfoStructOutput[];
 };
 
 export interface IPolicyManagerInterface extends utils.Interface {
   functions: {
+    "calculateRefundValue(bytes16)": FunctionFragment;
     "createPolicy(bytes16,address,uint64,address[])": FunctionFragment;
+    "getArrangementsLength(bytes16)": FunctionFragment;
+    "getCurrentPeriod()": FunctionFragment;
     "policies(bytes16)": FunctionFragment;
+    "revokeArrangement(bytes16,address)": FunctionFragment;
     "revokePolicy(bytes16)": FunctionFragment;
   };
 
   encodeFunctionData(
+    functionFragment: "calculateRefundValue",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "createPolicy",
     values: [BytesLike, string, BigNumberish, string[]]
   ): string;
+  encodeFunctionData(
+    functionFragment: "getArrangementsLength",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getCurrentPeriod",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "policies", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "revokeArrangement",
+    values: [BytesLike, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "revokePolicy",
     values: [BytesLike]
   ): string;
 
   decodeFunctionResult(
+    functionFragment: "calculateRefundValue",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "createPolicy",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "getArrangementsLength",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCurrentPeriod",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "policies", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "revokeArrangement",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "revokePolicy",
     data: BytesLike
@@ -130,6 +151,11 @@ export interface IPolicyManager extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    calculateRefundValue(
+      _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { refundValue: BigNumber }>;
+
     createPolicy(
       _policyId: BytesLike,
       _policyOwner: string,
@@ -138,8 +164,21 @@ export interface IPolicyManager extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    getArrangementsLength(
+      _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    getCurrentPeriod(overrides?: CallOverrides): Promise<[number]>;
+
     policies(
       _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[PolicyStructOutput] & { policy: PolicyStructOutput }>;
+
+    revokeArrangement(
+      _policyId: BytesLike,
+      _node: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -149,6 +188,11 @@ export interface IPolicyManager extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  calculateRefundValue(
+    _policyId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   createPolicy(
     _policyId: BytesLike,
     _policyOwner: string,
@@ -157,8 +201,21 @@ export interface IPolicyManager extends BaseContract {
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  getArrangementsLength(
+    _policyId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  getCurrentPeriod(overrides?: CallOverrides): Promise<number>;
+
   policies(
     _policyId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<PolicyStructOutput>;
+
+  revokeArrangement(
+    _policyId: BytesLike,
+    _node: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -168,6 +225,11 @@ export interface IPolicyManager extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    calculateRefundValue(
+      _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     createPolicy(
       _policyId: BytesLike,
       _policyOwner: string,
@@ -176,10 +238,23 @@ export interface IPolicyManager extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    getArrangementsLength(
+      _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getCurrentPeriod(overrides?: CallOverrides): Promise<number>;
+
     policies(
       _policyId: BytesLike,
       overrides?: CallOverrides
     ): Promise<PolicyStructOutput>;
+
+    revokeArrangement(
+      _policyId: BytesLike,
+      _node: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     revokePolicy(
       _policyId: BytesLike,
@@ -190,6 +265,11 @@ export interface IPolicyManager extends BaseContract {
   filters: {};
 
   estimateGas: {
+    calculateRefundValue(
+      _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     createPolicy(
       _policyId: BytesLike,
       _policyOwner: string,
@@ -198,8 +278,21 @@ export interface IPolicyManager extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    getArrangementsLength(
+      _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getCurrentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
+
     policies(
       _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    revokeArrangement(
+      _policyId: BytesLike,
+      _node: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -210,6 +303,11 @@ export interface IPolicyManager extends BaseContract {
   };
 
   populateTransaction: {
+    calculateRefundValue(
+      _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     createPolicy(
       _policyId: BytesLike,
       _policyOwner: string,
@@ -218,8 +316,21 @@ export interface IPolicyManager extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    getArrangementsLength(
+      _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getCurrentPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     policies(
       _policyId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    revokeArrangement(
+      _policyId: BytesLike,
+      _node: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

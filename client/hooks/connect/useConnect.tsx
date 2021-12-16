@@ -4,7 +4,7 @@ import { ConnectorNames, connectorsByName } from "utils/connectors";
 import { useEffect } from "react";
 
 export function useConnect() {
-  const { activate, error, library, account, active } = useWeb3React<Web3Provider>();
+  const { activate, error, library, account, active, chainId } = useWeb3React<Web3Provider>();
 
   const requestConnection = async (name: ConnectorNames) => {
     await activate(connectorsByName[name]);
@@ -22,5 +22,6 @@ export function useConnect() {
     requestConnection,
     library,
     error,
+    chainId
   };
 }

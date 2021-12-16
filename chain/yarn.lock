@@ -2,11 +2,6 @@
 # yarn lockfile v1
 
 
-"@chainlink/contracts@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@chainlink/contracts/-/contracts-0.3.0.tgz#b388615acab5d9353bc15b5357250cf0662bc8fe"
-  integrity sha512-Pxu5qMTa0gc28Sxf9hyBkvwhPMn3HD62cGXy54RkL9PcabOHlUsk1i3BoFf3rwFr7T30N/obYn4de3ZrG12PDA==
-
 "@cspotcode/source-map-consumer@0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-consumer/-/source-map-consumer-0.8.0.tgz#33bf4b7b39c178821606f669bbc447a6a629786b"
@@ -6227,10 +6222,10 @@ npm-run-path@^2.0.0:
   dependencies:
     path-key "^2.0.0"
 
-nucypher-ts@^0.4.8:
-  version "0.4.8"
-  resolved "http://localhost:4873/nucypher-ts/-/nucypher-ts-0.4.8.tgz#bdf2d23b4c715416465770fc3aafb711016cb2d3"
-  integrity sha512-qzNruDaGytHUwyjPJV8jgj6K8Hg1hYBdY5lv7S8zWZw3fPNJaL09jMgXHSJDDr1ojhpPxgUQJrJ1ysEEMZ6jhA==
+nucypher-ts@0.4.5:
+  version "0.4.5"
+  resolved "http://localhost:4873/nucypher-ts/-/nucypher-ts-0.4.5.tgz#94537a89a3f9013b5b5bd2d8fc017bc07091fd12"
+  integrity sha512-GFgFY8Vx1KE2zl7w/aUwuvmm/kmLKMmkdCSz1F/HhCqnLSWXBLtfWLOuNqQWkWiWAp4AKSqk3D4/BNfxe/46yw==
   dependencies:
     axios "^0.21.1"
     ethers "^5.4.1"

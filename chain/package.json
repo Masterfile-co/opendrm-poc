@@ -17,7 +17,7 @@
     "hardhat": "^2.7.0",
     "hardhat-deploy": "^0.9.14",
     "hardhat-gas-reporter": "^1.0.6",
-    "nucypher-ts": "^0.4.8",
+    "nucypher-ts": "0.4.5",
     "solidity-coverage": "^0.7.17",
     "ts-node": "^10.4.0",
     "typechain": "^6.0.5",

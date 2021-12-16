@@ -10,9 +10,10 @@ const { toUtf8Bytes, zeroPad, hexlify } = utils;
 
 interface Step2 {
   signer: JsonRpcSigner | null;
+  setNuUser: (bob: Bob) => void;
 }
 
-export function useStep2({ signer }: Step2) {
+export function useStep2({ signer, setNuUser }: Step2) {
   const [done, setDone] = useState(false);
 
   const registerUser = async (secretKey: string) => {
@@ -38,6 +39,7 @@ export function useStep2({ signer }: Step2) {
     );
     await tx.wait();
 
+    setNuUser(bob);
     setDone(true);
   };
 
@@ -68,6 +70,7 @@ export function useStep2({ signer }: Step2) {
     );
 
     if (registeredKey.bobVerifyingKey === hexlify(bob.verifyingKey.toBytes())) {
+      setNuUser(bob);
       setDone(true);
     } else {
       localStorage.removeItem("nu_sk");

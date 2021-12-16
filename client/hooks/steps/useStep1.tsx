@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export function useStep1() {
   const [done, setDone] = useState(false);
-  const { requestConnection, error, active, library } = useConnect();
+  const { requestConnection, error, active, library, chainId, account } = useConnect();
 
   useEffect(() => {
     if (!error && active) {
@@ -17,5 +17,7 @@ export function useStep1() {
     error,
     active,
     library,
+    chainId,
+    account
   };
 }

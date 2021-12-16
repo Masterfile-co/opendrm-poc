@@ -13,7 +13,8 @@ contract OpenDRM721 is ERC721 {
     using Strings for uint256;
     using LibNuCypher for string;
 
-    event PolicyRevoked(bytes16 policyId);
+    event PolicyFulfilled(bytes16 indexed policyId);
+    event PolicyRevoked(bytes16 indexed policyId);
 
     IPolicyManager private policyManager;
     AbioticAliceManager private abioticAlice;
@@ -81,6 +82,7 @@ contract OpenDRM721 is ERC721 {
                 _nodes
             );
             console.log("Policy fulfilled");
+            emit PolicyFulfilled(_policyId);
         }
     }
 
@@ -122,6 +124,8 @@ contract OpenDRM721 is ERC721 {
             (bytes memory toVerifyingKey, ) = abioticAlice.registry(to);
 
             policyId = label.toPolicyId(aliceVerifyingKey, toVerifyingKey);
+            console.log("New verifying key");
+            console.logBytes(toVerifyingKey);
             console.log("New Policy");
             console.logBytes16(policyId);
             validPolicy[policyId] = true;

@@ -17,6 +17,25 @@ const _abi = [
         name: "_policyId",
         type: "bytes16",
       },
+    ],
+    name: "calculateRefundValue",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "refundValue",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes16",
+        name: "_policyId",
+        type: "bytes16",
+      },
       {
         internalType: "address",
         name: "_policyOwner",
@@ -36,6 +55,38 @@ const _abi = [
     name: "createPolicy",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes16",
+        name: "_policyId",
+        type: "bytes16",
+      },
+    ],
+    name: "getArrangementsLength",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getCurrentPeriod",
+    outputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -105,32 +156,34 @@ const _abi = [
             name: "reservedSlot5",
             type: "uint256",
           },
-          {
-            components: [
-              {
-                internalType: "address",
-                name: "node",
-                type: "address",
-              },
-              {
-                internalType: "uint256",
-                name: "indexOfDowntimePeriods",
-                type: "uint256",
-              },
-              {
-                internalType: "uint16",
-                name: "lastRefundedPeriod",
-                type: "uint16",
-              },
-            ],
-            internalType: "struct IPolicyManager.ArrangementInfo[]",
-            name: "arrangements",
-            type: "tuple[]",
-          },
         ],
         internalType: "struct IPolicyManager.Policy",
         name: "policy",
         type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes16",
+        name: "_policyId",
+        type: "bytes16",
+      },
+      {
+        internalType: "address",
+        name: "_node",
+        type: "address",
+      },
+    ],
+    name: "revokeArrangement",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "refundValue",
+        type: "uint256",
       },
     ],
     stateMutability: "nonpayable",

@@ -7,6 +7,7 @@ import { AbioticAliceManager__factory } from "./types";
 import { TypedListener } from "./types/common";
 import { PolicyRequestedEvent } from "./types/AbioticAliceManager";
 import { fromHexString } from "./utils";
+import { HRAC } from "nucypher-ts/build/main/src/policies/hrac";
 
 let enactedPolicies: { [policyId: string]: EnactedPolicy } = {};
 
@@ -19,10 +20,7 @@ app.use(cors());
 const port = process.env.PORT || 3001;
 
 const provider = new providers.JsonRpcProvider("http://0.0.0.0:8545/");
-const wallet = new Wallet(
-  process.env.ALICE_ETH_PRIVATE_KEY as string,
-  provider
-);
+const wallet = new Wallet(process.env.ALICE_PRIVATE_KEY as string, provider);
 
 const nuAlice = Alice.fromSecretKeyBytes(
   NuConfig,
@@ -45,8 +43,6 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
   paymentPeriods,
   label
 ) => {
-  console.log(recipient);
-
   const bobKeys = await abioticAliceManager.registry(recipient);
 
   const verifyingKey = PublicKey.fromBytes(
@@ -55,6 +51,13 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
   const decryptingKey = PublicKey.fromBytes(
     fromHexString(bobKeys.bobDecryptingKey.slice(2))
   );
+
+  console.log(
+    `handling policy with label: ${label}, publisher verifying key: ${utils.hexlify(
+      nuAlice.verifyingKey.toBytes()
+    )}, recipient verifying key: ${bobKeys.bobVerifyingKey}`
+  );
+  console.log();
 
   const policy = await nuAlice.generatePolicy({
     label,
@@ -67,7 +70,6 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
     paymentPeriods: paymentPeriods.toNumber(),
   });
   const policyId = utils.hexlify(policy.id.toBytes());
-  console.log(policyId);
 
   const _nodes = policy.ursulas.map((ursula) => ursula.checksumAddress);
 
@@ -86,7 +88,7 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
       `Fulfilled ${policyId} for ${recipient} requested by ${requestor}`
     );
   } catch (err) {
-    // console.log("Error fulfilling policy", err);
+    console.log("Error fulfilling policy", err);
   }
 };
 
@@ -117,6 +119,18 @@ app.get("/encryptingKey", (req, res) => {
   const encryptingKey = nuAlice.getPolicyEncryptingKeyFromLabel(label);
 
   res.send(Buffer.from(encryptingKey.toBytes()));
+});
+
+app.get("/policyId", (req, res) => {
+  let label = req.query.label as string;
+  let bobVerifyingKey = req.query.verifyingKey as string;
+
+  let policyId = HRAC.derive(
+    nuAlice.verifyingKey.toBytes(),
+    fromHexString(bobVerifyingKey.slice(2)),
+    label
+  ).toBytes();
+  res.send({ policyId: utils.hexlify(policyId) });
 });
 
 app.listen(port, () => {

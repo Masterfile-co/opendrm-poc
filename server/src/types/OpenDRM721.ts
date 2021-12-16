@@ -175,12 +175,14 @@ export interface OpenDRM721Interface extends utils.Interface {
   events: {
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
+    "PolicyFulfilled(bytes16)": EventFragment;
     "PolicyRevoked(bytes16)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PolicyFulfilled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PolicyRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
@@ -198,6 +200,10 @@ export type ApprovalForAllEvent = TypedEvent<
 >;
 
 export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
+
+export type PolicyFulfilledEvent = TypedEvent<[string], { policyId: string }>;
+
+export type PolicyFulfilledEventFilter = TypedEventFilter<PolicyFulfilledEvent>;
 
 export type PolicyRevokedEvent = TypedEvent<[string], { policyId: string }>;
 
@@ -515,8 +521,15 @@ export interface OpenDRM721 extends BaseContract {
       approved?: null
     ): ApprovalForAllEventFilter;
 
-    "PolicyRevoked(bytes16)"(policyId?: null): PolicyRevokedEventFilter;
-    PolicyRevoked(policyId?: null): PolicyRevokedEventFilter;
+    "PolicyFulfilled(bytes16)"(
+      policyId?: BytesLike | null
+    ): PolicyFulfilledEventFilter;
+    PolicyFulfilled(policyId?: BytesLike | null): PolicyFulfilledEventFilter;
+
+    "PolicyRevoked(bytes16)"(
+      policyId?: BytesLike | null
+    ): PolicyRevokedEventFilter;
+    PolicyRevoked(policyId?: BytesLike | null): PolicyRevokedEventFilter;
 
     "Transfer(address,address,uint256)"(
       from?: string | null,

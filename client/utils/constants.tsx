@@ -2,9 +2,10 @@ export const NuConfig = {
   porterUri: "https://porter-lynx.nucypher.community/",
 };
 
-export const OPENDRM721_ADDRESS = "0xC1eaD84E2a0AD743b9f519E815BA29749469a137";
+export const OPENDRM721_ADDRESS = process.env.NEXT_PUBLIC_OPENDRM721_ADDRESS as string;
 
-export const ABIOTICALICE_ADDRESS = "0x1867da0945Cb91e924cb83fa2AEEb11E8627f9BC"
+export const ABIOTICALICE_ADDRESS = process.env
+  .NEXT_PUBLIC_ABIOTIC_ALICE_MANAGER_ADDRESS as string;
 
 // Policy defaults, will make this dynamic user inputs later
 export const THRESHOLD = 2;
