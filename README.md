@@ -17,6 +17,10 @@ It is reccomended that the user is familair with the workings of the [NuCypher n
 
 ## Demo Steps
 
+  - WIP: Still messing and being deployed to testnet
+  - Using a modified version of [nucypher-ts](https://github.com/Masterfile-co/nucypher-ts/tree/decouple-policy-generation)
+  
+
 ### Step 1: Connect Wallet
 
 Step 1 of the demo is to connect your ethereum wallet to the application, we reccomend using Metamask. The demo is operating on the Goerli testnet. You will need testnet eth to interact with the demo. This can be aquired through the [Paradigm Faucet](https://faucet.paradigm.xyz/)
