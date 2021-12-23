@@ -6,7 +6,7 @@ import { AbioticAliceManager__factory } from "../types";
 
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts, ethers } = hre;
-  const { bob, charlie } = await getNamedAccounts();
+  const { bob } = await getNamedAccounts();
 
   const abioticAliceDeployment = await deployments.get("AbioticAliceManager");
 
@@ -21,12 +21,12 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     nuBob.decryptingKey.toBytes()
   );
 
-  await abioticAlice
-    .connect(await ethers.getSigner(charlie))
-    .registerMe(
-      nuCharlie.verifyingKey.toBytes(),
-      nuCharlie.decryptingKey.toBytes()
-    );
+  // await abioticAlice
+  //   .connect(await ethers.getSigner(charlie))
+  //   .registerMe(
+  //     nuCharlie.verifyingKey.toBytes(),
+  //     nuCharlie.decryptingKey.toBytes()
+  //   );
 };
 
 export default deploy;

@@ -12,17 +12,17 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     args: ["0xaC5e34d3FD41809873968c349d1194D23045b9D2", AbioticAlice.address],
     log: true,
-    deterministicDeployment: true,
+    deterministicDeployment: false,
   });
 
   const OpenDRM721 = await deployments.get("OpenDRM721");
   const signer = await ethers.getSigner(deployer);
 
-  signer.sendTransaction({
+  const tx = await signer.sendTransaction({
     to: OpenDRM721.address,
-    value: ethers.utils.parseEther("1"),
+    value: ethers.utils.parseEther("0.5"),
   });
-  
+  await tx.wait()
 };
 
 export default deploy;

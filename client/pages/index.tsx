@@ -10,11 +10,8 @@ const Home: NextLayoutComponentType = () => {
   const { error } = useConnect();
 
   return (
-    <div className="bg-gray-500 min-h-screen">
-      {error && <span className="flex bg-red-500">{error.message}</span>}
-      <div className="flex flex-col justify-center items-center w-full">
-        <Demo />
-      </div>
+    <div className="flex flex-col justify-center items-center w-full">
+      <Demo />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 node/goerli:
-	yarn hardhat node --fork https://eth-goerli.alchemyapi.io/v2/NaRHL0aj6QXyhhP8lg2GOekiKT6kb2AD --hostname 0.0.0.0
+	yarn hardhat node --fork ${GOERLI_URL} --hostname 0.0.0.0
 
 node:
 	yarn hardhat node --hostname 0.0.0.0
@@ -10,8 +10,8 @@ deploy:
 deploy/local:
 	yarn hardhat deploy --network localhost
 
-listen:
-	yarn hardhat run scripts/listen.ts --network localhost
+deploy/goerli:
+	yarn hardhat deploy --network goerli
 
 transfer:
 	yarn hardhat run scripts/transfer.ts --network localhost

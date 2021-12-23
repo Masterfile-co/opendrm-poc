@@ -3,6 +3,10 @@ module.exports = {
   purge: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
   darkMode: false, // or 'media' or 'class'
   theme: {
+    fontFamily: {
+      "primary": "Montserrat",
+      "secondary": "Lato",
+    },
     extend: {
       colors: {
         "masterfile-purple": "#7544E0",
@@ -12,6 +16,8 @@ module.exports = {
         "masterfile-gray-400": "#D1D1D1",
         "masterfile-gray-600": "#313133",
         "masterfile-gray-900": "#232225",
+        "light-purple": "#C5AAFF",
+        "sidebar": "#232225"
       },
     },
   },

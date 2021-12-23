@@ -26,5 +26,5 @@ export function useEagerConnect() {
     }
   }, [tried, active]);
 
-  return tried;
+  return { tried };
 }

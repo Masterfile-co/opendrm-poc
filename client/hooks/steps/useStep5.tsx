@@ -19,7 +19,7 @@ export function useStep5(props: Step5) {
 
     await openDRM721["safeTransferFrom(address,address,uint256)"](
       account,
-      "0xF33F339F4B4E3B59B0716809D7A16Dd32870980F",
+      process.env.BOB_ADDRESS as string,
       tokenId,
       { gasLimit: 700_000 }
     );

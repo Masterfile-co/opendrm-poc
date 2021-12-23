@@ -34,11 +34,9 @@ const config: HardhatUserConfig = {
   networks: {
     goerli: {
       url: process.env.GOERLI_URL || "",
-      accounts:
-        process.env.DEPLOYER_PRIVATE_KEY !== undefined &&
-        process.env.ALICE_PRIVATE_KEY !== undefined
-          ? [process.env.DEPLOYER_PRIVATE_KEY, process.env.ALICE_PRIVATE_KEY]
-          : [],
+      accounts: {
+        mnemonic: process.env.MNEMONIC || ""
+      }
     },
     hardhat: {
       // mining: {
@@ -56,18 +54,12 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       default: 0,
-      31337: "0x6899A52CB506cF268dD8Df2F47F1333885c92d59",
-      goerli: "0x6899A52CB506cF268dD8Df2F47F1333885c92d59",
     },
     alice: {
       default: 1,
-      31337: "0xf2aD32adFeD461645f34fB21A460cce43F7980d5",
-      goerli: "0xf2aD32adFeD461645f34fB21A460cce43F7980d5",
     },
     bob: {
       default: 2,
-      31337: "0xF33F339F4B4E3B59B0716809D7A16Dd32870980F",
-      goerli: "0xF33F339F4B4E3B59B0716809D7A16Dd32870980F",
     },
     charlie: {
       default: 3,

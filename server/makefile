@@ -1,5 +1,8 @@
 install:
 	yarn --registry http://localhost:4873/
 
-up:
+up/local:
 	yarn dev
+
+up/goerli:
+	export NETWORK=goerli && yarn dev

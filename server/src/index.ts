@@ -18,8 +18,11 @@ const NuConfig = {
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 3001;
-
-const provider = new providers.JsonRpcProvider("http://0.0.0.0:8545/");
+const providerUrl =
+  process.env?.NETWORK == "goerli"
+    ? (process.env.GOERLI_URL as string)
+    : "http://0.0.0.0:8545/";
+const provider = new providers.JsonRpcProvider(providerUrl);
 const wallet = new Wallet(process.env.ALICE_PRIVATE_KEY as string, provider);
 
 const nuAlice = Alice.fromSecretKeyBytes(

@@ -19,7 +19,7 @@ export interface IButton extends React.HTMLAttributes<HTMLButtonElement> {
 export const Button = ({ className, children, ...props }: IButton) => {
   return (
     <button
-      className={`px-5 py-4 text-white font-bold rounded uppercase w-full ${className}`}
+      className={`px-7 py-[14px] font-bold text-white rounded uppercase text-[16px] ${className}`}
       {...props}
     >
       {children}
