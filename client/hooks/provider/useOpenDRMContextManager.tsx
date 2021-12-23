@@ -71,9 +71,7 @@ export function useOpenDRMContextManager(): OpenDRMContext {
 
     // Check if valid registration
     const secretKey = localStorage.getItem("nu_sk");
-
-    console.log("secretKey", secretKey)
-
+    
     if (!secretKey) {
       // push("/step2");
       setLoading(false);
@@ -106,6 +104,20 @@ export function useOpenDRMContextManager(): OpenDRMContext {
     dispatch({ type: ActionType.UPDATE, payload: { metadata } });
   }, []);
 
+  const setNuUserPolicyId = useCallback((policyId: string) => {
+    dispatch({
+      type: ActionType.UPDATE,
+      payload: { nuUserPolicyId: policyId },
+    });
+  }, []);
+
+  const setBobPolicyId = useCallback((policyId: string) => {
+    dispatch({
+      type: ActionType.UPDATE,
+      payload: { bobPolicyId: policyId },
+    });
+  }, []);
+
   /**
    * Sets stepIndex as done and sets next step as active
    */
@@ -130,7 +142,14 @@ export function useOpenDRMContextManager(): OpenDRMContext {
     dispatch({ type: ActionType.UPDATE, payload: { nuUser: user } });
   }, []);
 
-  return { ...state, setMetadata, setStepDone, setNuUser };
+  return {
+    ...state,
+    setMetadata,
+    setStepDone,
+    setNuUser,
+    setNuUserPolicyId,
+    setBobPolicyId,
+  };
 }
 
 const initialState: OpenDRMManagerState = {

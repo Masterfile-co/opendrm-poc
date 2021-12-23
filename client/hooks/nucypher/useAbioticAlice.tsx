@@ -1,18 +1,11 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import {
-  Alice,
-  BlockchainPolicyParameters,
-  Bob,
-  EnactedPolicy,
-  PublicKey,
-} from "nucypher-ts";
-import { Web3Provider } from "@ethersproject/providers";
-import { hexlify } from "ethers/lib/utils";
-import { AbioticAliceManager__factory } from "types";
-import axios from "axios";
-import sha3 from "js-sha3";
-import { utils } from "ethers";
+import { Bob, PublicKey } from "nucypher-ts";
+import axios, { AxiosResponse } from "axios";
 import { HRAC } from "nucypher-ts/build/main/src/policies/hrac";
+import { Ursula } from "nucypher-ts/build/main/src/characters/porter";
+import { fromHexString } from "utils";
+import { Capsule } from "umbral-pre";
+import { EncryptedTreasureMap } from "nucypher-ts/build/main/src/policies/collections";
+import { hexlify, keccak256, solidityPack } from "ethers/lib/utils";
 
 export function useAbioticAlice() {
   // useEffect(() => {
@@ -52,26 +45,68 @@ export function useAbioticAlice() {
   };
 
   const getPolicyId = async (label: string, bob: Bob) => {
-    const bobVerifyingKey = utils.hexlify(bob.verifyingKey.toBytes());
+    const aliceVerifyingKey = await getVerifyingKey();
 
-    return axios
-      .get(
-        `http://localhost:3001/policyId?label=${label}&verifyingKey=${bobVerifyingKey}`
+    return keccak256(
+      solidityPack(
+        ["bytes", "bytes", "string"],
+        [
+          hexlify(aliceVerifyingKey.toBytes()),
+          hexlify(bob.verifyingKey.toBytes()),
+          label,
+        ]
       )
-      .then((res) => {
-        return res.data.policyId;
-      });
-
-    // return res.data.policyId;
+    ).slice(0, 34);
   };
 
   const getPolicy = async (policyId: string) => {
-    return axios
-      .get(`http://localhost:3001/policy?policyId=${policyId}`)
-      .then((res) => {
-        const policy = res.data as EnactedPolicy;
-        return policy;
-      });
+    const params = { policyId };
+
+    const resp: AxiosResponse<GetPolicyResponse> = await axios.get(
+      `http://localhost:3001/policy`,
+      { params }
+    );
+
+    return {
+      id: new HRAC(fromHexString(resp.data.id)),
+      ursulas: resp.data.ursulas,
+      label: resp.data.label,
+      policyKey: PublicKey.fromBytes(fromHexString(resp.data.policyKey)),
+      aliceVerifyingKey: PublicKey.fromBytes(
+        fromHexString(resp.data.aliceVerifyingKey)
+      ),
+      encryptedTreasureMap: new EncryptedTreasureMap(
+        Capsule.fromBytes(
+          fromHexString(resp.data.encryptedTreasureMap.capsule)
+        ),
+        fromHexString(resp.data.encryptedTreasureMap.cyphertext)
+      ),
+    };
+
+    // return axios
+    //   .get(`http://localhost:3001/policy?policyId=${policyId}`)
+    //   .then((res) => {
+    //     const _policy = res.data as EnactedPolicy;
+    //     const key = _policy.policyKey.toBytes();
+    //     console.log(JSON.stringify(key));
+    //     // console.log(PublicKey.fromBytes(_policy.policyKey));
+
+    //     // const policy: any = { ..._policy };
+    //     // policy.id = new HRAC(Uint8Array.from(Object.values(_policy.id.bytes)));
+    //     // policy.aliceVerifyingKey = Uint8Array.from(
+    //     //   Object.values(_policy.aliceVerifyingKey)
+    //     // );
+    //     // policy.encryptedTreasureMap.ciphertext = Uint8Array.from(
+    //     //   Object.values(_policy.encryptedTreasureMap.ciphertext)
+    //     // );
+    //     // policy.policyEncryptingKey = PublicKey.fromBytes(
+    //     //   Uint8Array.from(Object.values(_policy.policyEncryptingKey))
+    //     // );
+
+    //     // console.log(policy);
+
+    //     // return policy as EnactedPolicy;
+    //   });
   };
 
   return {
@@ -80,4 +115,16 @@ export function useAbioticAlice() {
     getPolicyId,
     getPolicy,
   };
+}
+
+interface GetPolicyResponse {
+  id: string;
+  label: string;
+  encryptedTreasureMap: {
+    capsule: string;
+    cyphertext: string;
+  };
+  policyKey: string;
+  aliceVerifyingKey: string;
+  ursulas: Ursula[];
 }

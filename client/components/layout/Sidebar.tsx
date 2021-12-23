@@ -2,8 +2,10 @@ import React from "react";
 import Image from "next/image";
 import VerticleSteps from "./VerticleSteps";
 import MetadataField from "./MetadataField";
+import { useOpenDRM } from "hooks/provider/useOpenDRM";
 
 export default function Sidebar() {
+
   return (
     <div className="flex flex-col bg-sidebar items-center">
       <div className="mx-[30px] mt-[33px] w-[300px]">
@@ -15,7 +17,6 @@ export default function Sidebar() {
         />
       </div>
       <VerticleSteps />
-      {/* <div className="flex flex-grow h-full"></div> */}
       <MetadataField />
     </div>
   );

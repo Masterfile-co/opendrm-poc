@@ -7,12 +7,21 @@ import { useAbioticAlice } from "hooks/nucypher/useAbioticAlice";
 import { useEnrico } from "hooks/nucypher/useEnrico";
 import { useOpenDRM } from "hooks/provider/useOpenDRM";
 import { Step } from "providers/OpenDRMContextProvider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OpenDRM721__factory } from "types";
 import { OPENDRM721_ADDRESS } from "utils/constants";
 
 export function useStep3() {
-  const { steps, setMetadata, tokenId, setStepDone } = useOpenDRM();
+  const {
+    steps,
+    setMetadata,
+    tokenId,
+    setStepDone,
+    nuUser,
+    setNuUserPolicyId,
+    nuUserPolicyId,
+  } = useOpenDRM();
+  const { getPolicyId } = useAbioticAlice();
   const { library, chainId } = useWeb3React<Web3Provider>();
   const [localSteps, setLocalSteps] = useState<Step[]>([
     { label: "A", title: "Encrypt", done: false, active: true },
@@ -36,16 +45,19 @@ export function useStep3() {
     library,
     tokenId,
     chainId,
+    nuUser,
+    setNuUserPolicyId,
   });
 
   const mintProps = useMint({ setLocalStepDone, library, tokenId });
 
-  const policyProps = usePolicy({ setStepDone });
+  const policyProps = usePolicy({ setStepDone, policyId: nuUserPolicyId });
 
   return {
     localSteps,
     encryptProps,
     mintProps,
+    tokenId,
     active: steps[2].active,
     done: steps[2].done,
   };

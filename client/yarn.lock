@@ -2853,10 +2853,10 @@ normalize-range@^0.1.2:
   resolved "http://localhost:4873/normalize-range/-/normalize-range-0.1.2.tgz#2d10c06bdfd312ea9777695a4d28439456b75942"
   integrity sha1-LRDAa9/TEuqXd2laTShDlFa3WUI=
 
-nucypher-ts@0.4.5:
+"nucypher-ts@npm:@masterfile-co/nucypher-ts@0.4.5":
   version "0.4.5"
-  resolved "http://localhost:4873/nucypher-ts/-/nucypher-ts-0.4.5.tgz#94537a89a3f9013b5b5bd2d8fc017bc07091fd12"
-  integrity sha512-GFgFY8Vx1KE2zl7w/aUwuvmm/kmLKMmkdCSz1F/HhCqnLSWXBLtfWLOuNqQWkWiWAp4AKSqk3D4/BNfxe/46yw==
+  resolved "http://localhost:4873/@masterfile-co%2fnucypher-ts/-/nucypher-ts-0.4.5.tgz#6ac02934c164596e95c94eb5ad2cbf2b05ebe6a3"
+  integrity sha512-vZWE0elwoEJL/4pLW1xDa0316KZYOwlt2441fY0bTJ+txPecHTnMjmckJqgeyjCgILzkw3R9Oaw1zWaqEVkw5A==
   dependencies:
     axios "^0.21.1"
     ethers "^5.4.1"

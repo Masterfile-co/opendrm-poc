@@ -1,13 +1,14 @@
 import "dotenv/config";
-import express from "express";
+import express, { Request } from "express";
 import cors from "cors";
 import { Wallet, providers, utils } from "ethers";
-import { Alice, EnactedPolicy, PublicKey } from "nucypher-ts";
+import { Alice, Bob, EnactedPolicy, PublicKey } from "nucypher-ts";
 import { AbioticAliceManager__factory } from "./types";
 import { TypedListener } from "./types/common";
 import { PolicyRequestedEvent } from "./types/AbioticAliceManager";
 import { fromHexString } from "./utils";
 import { HRAC } from "nucypher-ts/build/main/src/policies/hrac";
+import { hexlify, toUtf8Bytes, zeroPad } from "ethers/lib/utils";
 
 let enactedPolicies: { [policyId: string]: EnactedPolicy } = {};
 
@@ -101,13 +102,62 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/policy", (req, res) => {
-  let policyId = req.query.policyId as string;
+interface PolicyQuery {
+  policyId: string;
+}
 
+app.get("/policy", async (req: Request<any, any, any, PolicyQuery>, res) => {
+  let policyId = req.query.policyId;
+
+  const _policy = enactedPolicies[policyId];
+
+  const bob = Bob.fromSecretKey(NuConfig, zeroPad(toUtf8Bytes("asdfasdf"), 32));
+
+  await bob
+    .retrieveAndDecrypt(
+      _policy.policyKey,
+      nuAlice.verifyingKey,
+      [],
+      _policy.encryptedTreasureMap
+    )
+    .catch((err) => {
+      console.log(err);
+    })
+    .then((res) => {
+      console.log(res);
+    });
+
+  if (_policy) {
+    const policy: any = {
+      id: hexlify(_policy.id.toBytes()),
+      label: _policy.label,
+      encryptedTreasureMap: {
+        capsule: hexlify(_policy.encryptedTreasureMap.capsule.toBytes()),
+        cyphertext: hexlify(_policy.encryptedTreasureMap.ciphertext),
+      },
+      policyKey: hexlify(_policy.policyKey.toBytes()),
+      aliceVerifyingKey: hexlify(_policy.aliceVerifyingKey),
+      ursulas: _policy.ursulas,
+    };
+    res.status(200).json(policy);
+  } else {
+    res.status(404).send("No enacted policy");
+  }
+});
+
+interface TreasureMapParams {
+  policyId: string;
+}
+
+app.get("/treasureMap", (req: Request<TreasureMapParams>, res) => {
+  const policyId = req.params.policyId;
   const policy = enactedPolicies[policyId];
 
   if (policy) {
-    res.send(JSON.stringify(policy, null, 4));
+    res.send({
+      capsule: hexlify(policy.encryptedTreasureMap.capsule.toBytes()),
+      cyphertext: hexlify(policy.encryptedTreasureMap.ciphertext),
+    });
   } else {
     res.status(404).send("No enacted policy");
   }
