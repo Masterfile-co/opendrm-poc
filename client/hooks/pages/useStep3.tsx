@@ -20,6 +20,7 @@ export function useStep3() {
     nuUser,
     setNuUserPolicyId,
     nuUserPolicyId,
+    setLabel,
   } = useOpenDRM();
   const { getPolicyId } = useAbioticAlice();
   const { library, chainId } = useWeb3React<Web3Provider>();
@@ -47,6 +48,7 @@ export function useStep3() {
     chainId,
     nuUser,
     setNuUserPolicyId,
+    setLabel,
   });
 
   const mintProps = useMint({ setLocalStepDone, library, tokenId });

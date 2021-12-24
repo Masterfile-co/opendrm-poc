@@ -71,7 +71,7 @@ export function useOpenDRMContextManager(): OpenDRMContext {
 
     // Check if valid registration
     const secretKey = localStorage.getItem("nu_sk");
-    
+
     if (!secretKey) {
       // push("/step2");
       setLoading(false);
@@ -142,6 +142,10 @@ export function useOpenDRMContextManager(): OpenDRMContext {
     dispatch({ type: ActionType.UPDATE, payload: { nuUser: user } });
   }, []);
 
+  const setLabel = useCallback((label: string) => {
+    dispatch({ type: ActionType.UPDATE, payload: { label } });
+  }, []);
+
   return {
     ...state,
     setMetadata,
@@ -149,6 +153,7 @@ export function useOpenDRMContextManager(): OpenDRMContext {
     setNuUser,
     setNuUserPolicyId,
     setBobPolicyId,
+    setLabel,
   };
 }
 

@@ -14,6 +14,7 @@ export interface EncryptHook {
   setLocalStepDone: (stepIndex: number) => void;
   setMetadata: (metadata: Metadata) => void;
   setNuUserPolicyId: (policyId: string) => void;
+  setLabel: (label: string) => void;
   nuUser: Bob | undefined;
 }
 
@@ -25,6 +26,7 @@ export function useEncrypt(props: EncryptHook) {
     setLocalStepDone,
     setMetadata,
     setNuUserPolicyId,
+    setLabel,
     nuUser,
   } = props;
   const [cleartext, dispatchCleartext] = useState<string>("");
@@ -44,7 +46,11 @@ export function useEncrypt(props: EncryptHook) {
       alert("Please connect wallet");
       return;
     }
-    const label = OPENDRM721_ADDRESS.toLowerCase() + chainId.toString() + tokenId.toString();
+    const label =
+      OPENDRM721_ADDRESS.toLowerCase() +
+      chainId.toString() +
+      tokenId.toString();
+    setLabel(label);
     const encryptingKey = await getEncryptingKey(label);
     const { encryptMessage } = useEnrico({ encryptingKey });
     const messageKit = encryptMessage(cleartext);
@@ -54,10 +60,8 @@ export function useEncrypt(props: EncryptHook) {
       description: "An OpenDRM prototype demonstration",
       msgKit: messageKit,
     });
-    
-    const policyId = await getPolicyId(label, nuUser);
 
-    console.log(policyId);
+    const policyId = await getPolicyId(label, nuUser);
 
     setNuUserPolicyId(policyId);
 

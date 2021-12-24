@@ -29,7 +29,7 @@ export function useTransfer(props: TransferHook) {
 
     const tx = await openDRM721.transferFrom(
       account,
-      process.env.BOB_ADDRESS as string,
+      process.env.NEXT_PUBLIC_BOB_ADDRESS as string,
       tokenId
     );
     await tx.wait();

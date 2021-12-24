@@ -111,22 +111,6 @@ app.get("/policy", async (req: Request<any, any, any, PolicyQuery>, res) => {
 
   const _policy = enactedPolicies[policyId];
 
-  const bob = Bob.fromSecretKey(NuConfig, zeroPad(toUtf8Bytes("asdfasdf"), 32));
-
-  await bob
-    .retrieveAndDecrypt(
-      _policy.policyKey,
-      nuAlice.verifyingKey,
-      [],
-      _policy.encryptedTreasureMap
-    )
-    .catch((err) => {
-      console.log(err);
-    })
-    .then((res) => {
-      console.log(res);
-    });
-
   if (_policy) {
     const policy: any = {
       id: hexlify(_policy.id.toBytes()),
@@ -143,6 +127,7 @@ app.get("/policy", async (req: Request<any, any, any, PolicyQuery>, res) => {
   } else {
     res.status(404).send("No enacted policy");
   }
+  
 });
 
 interface TreasureMapParams {

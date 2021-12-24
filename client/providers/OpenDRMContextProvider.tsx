@@ -23,6 +23,9 @@ export const OpenDRMContext = createContext<OpenDRMContext>({
   setNuUserPolicyId: (policyId: string) => {
     throw new Error("Not Initialized");
   },
+  setLabel: (label: string) => {
+    throw new Error("Not Initialized");
+  },
   setBobPolicyId: (policyId: string) => {
     throw new Error("Not Initialized");
   },
@@ -50,6 +53,7 @@ export interface OpenDRMManagerState {
   metadata?: Metadata;
   loading: boolean;
   tokenId: number;
+  label?: string;
   nuUserPolicyId?: string;
   bobPolicyId?: string;
 }
@@ -60,4 +64,5 @@ export interface OpenDRMContext extends OpenDRMManagerState {
   setNuUser: (user: Bob) => void;
   setNuUserPolicyId: (policyId: string) => void;
   setBobPolicyId: (policyId: string) => void;
+  setLabel: (label: string) => void;
 }

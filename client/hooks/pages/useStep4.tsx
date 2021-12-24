@@ -1,15 +1,15 @@
 import { hexlify } from "ethers/lib/utils";
-import { useAbioticAlice } from "hooks/nucypher/useAbioticAlice";
+import { useDecryptMetadata } from "hooks/components/useDecryptMetadata";
 import { useOpenDRM } from "hooks/provider/useOpenDRM";
-import { PublicKey } from "nucypher-ts";
-import { EncryptedTreasureMap } from "nucypher-ts/build/main/src/policies/collections";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { fromBytes } from "utils";
 
 export function useStep4() {
-  const { metadata, nuUser, nuUserPolicyId } = useOpenDRM();
+  const { metadata, nuUser, nuUserPolicyId, setStepDone, steps } = useOpenDRM();
   const [image, setImage] = useState("");
-  const { getPolicy } = useAbioticAlice();
+  const [cleartext, setCleartext] = useState<string | undefined>(undefined);
+  const { decryptMetadata } = useDecryptMetadata();
+  const { push } = useRouter();
 
   useEffect(() => {
     if (metadata) {
@@ -27,19 +27,21 @@ export function useStep4() {
       return;
     }
 
-    // get policy
-    const policy = await getPolicy(nuUserPolicyId);
-    console.log(policy);
-
-    const res = await nuUser.retrieveAndDecrypt(
-      policy.policyKey,
-      policy.aliceVerifyingKey,
-      [metadata.msgKit],
-      policy.encryptedTreasureMap
-    );
-
-    console.log(fromBytes(res[0]))
+    const cleartext = await decryptMetadata(nuUser, nuUserPolicyId, metadata);
+    setCleartext(cleartext);
+    setStepDone(3);
   };
 
-  return { image, decrypt };
+  const incPage = () => {
+    push("/step5");
+  };
+
+  return {
+    image,
+    decrypt,
+    cleartext,
+    incPage,
+    nuUserPolicyId,
+    active: steps[3].active,
+  };
 }

@@ -14,7 +14,7 @@ export default function Mint(props: Mint) {
       {!loading && (
         <>
           <span className="text-3xl text-center font-semibold">
-            Encrypt your NFT
+            Mint your NFT
           </span>
           <PrimaryButton
             className="w-[215px]"
