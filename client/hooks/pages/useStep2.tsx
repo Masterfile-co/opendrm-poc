@@ -15,6 +15,7 @@ export function useStep2() {
   const [secretKey, dispatchSecretKey] = useState<string | undefined>(
     undefined
   );
+  const [loading, setLoading] = useState(false);
 
   const setSecretKey = (secretKey: string) => {
     dispatchSecretKey(secretKey);
@@ -29,6 +30,7 @@ export function useStep2() {
       alert("Please enter secret key");
       return;
     }
+    setLoading(true);
 
     const bob = Bob.fromSecretKey(
       NuConfig,
@@ -48,6 +50,7 @@ export function useStep2() {
 
     localStorage.setItem("nu_sk", secretKey);
     setNuUser(bob);
+    setLoading(false)
     setStepDone(1);
     push("/step3");
   };
@@ -56,6 +59,7 @@ export function useStep2() {
     secretKey,
     setSecretKey,
     registerUser,
+    loading,
     done: steps[1].done,
     active: steps[1].active,
   };

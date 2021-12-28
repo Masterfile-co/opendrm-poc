@@ -9,11 +9,22 @@ export interface DecryptHook {
   nuUser: Bob | undefined;
   metadata: Metadata | undefined;
   nuUserPolicyId: string | undefined;
-  label: string | undefined
+  bob: Bob;
+  bobPolicyId: string | undefined;
+  setLocalStepDone: (stepIndex: number) => void;
+  setStepDone: (stepIndex: number) => void;
 }
 
 export function useDecrypt(props: DecryptHook) {
-  const { metadata, nuUserPolicyId, label, nuUser } = props;
+  const {
+    metadata,
+    nuUserPolicyId,
+    nuUser,
+    bob,
+    bobPolicyId,
+    setLocalStepDone,
+    setStepDone,
+  } = props;
   const [bobCleartext, setBobCleartext] = useState<string | undefined>();
   const { decryptMetadata } = useDecryptMetadata();
   const { getPolicyId } = useAbioticAlice();
@@ -33,20 +44,15 @@ export function useDecrypt(props: DecryptHook) {
     });
   };
   const decryptAsBob = async () => {
-    if (!metadata || !label) {
+    if (!metadata || !bobPolicyId) {
       alert("Please transfer NFT to bob");
       return;
     }
 
-    const bob = Bob.fromSecretKey(
-      NuConfig,
-      Buffer.from("fake-secret-key-32-bytes-bob-xxx")
-    );
-
-    const policyId = await getPolicyId(label, bob);
-
-    const cleartext = await decryptMetadata(bob, policyId, metadata);
+    const cleartext = await decryptMetadata(bob, bobPolicyId, metadata);
     setBobCleartext(cleartext);
+    setLocalStepDone(2);
+    setStepDone(4);
   };
 
   return { decryptAsBob, decryptAsYou, bobCleartext };

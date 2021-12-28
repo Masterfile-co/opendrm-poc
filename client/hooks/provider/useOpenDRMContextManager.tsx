@@ -98,7 +98,7 @@ export function useOpenDRMContextManager(): OpenDRMContext {
       // push("/step2");
       setLoading(false);
     }
-  }, [active]);
+  }, [active, steps]);
 
   const setMetadata = useCallback((metadata: Metadata) => {
     dispatch({ type: ActionType.UPDATE, payload: { metadata } });
@@ -132,7 +132,33 @@ export function useOpenDRMContextManager(): OpenDRMContext {
         _steps[i].done = true;
         _steps[i].active = false;
       }
-      _steps[stepIndex + 1].active = true;
+      if (stepIndex < _steps.length - 1) {
+        _steps[stepIndex + 1].active = true;
+      }
+      dispatch({ type: ActionType.UPDATE, payload: { steps: _steps } });
+    },
+    [steps]
+  );
+
+  const setMinorStepDone = useCallback(
+    (stepIndex: number, minorStepIndex: number) => {
+      if (stepIndex >= state.steps.length) {
+        throw new Error("Invalid step");
+      }
+
+      const step = { ...state.steps[stepIndex] };
+      if (!step.minorSteps || minorStepIndex > step.minorSteps.length) {
+        throw new Error("Invalid minor step");
+      }
+      for (var i = 0; i <= minorStepIndex; i++) {
+        step.minorSteps[i].done = true;
+        step.minorSteps[i].active = false;
+      }
+      if (minorStepIndex < step.minorSteps.length - 1) {
+        step.minorSteps[i].active = true;
+      }
+      const _steps = [...state.steps];
+      _steps[stepIndex] = step;
       dispatch({ type: ActionType.UPDATE, payload: { steps: _steps } });
     },
     [steps]
@@ -150,6 +176,7 @@ export function useOpenDRMContextManager(): OpenDRMContext {
     ...state,
     setMetadata,
     setStepDone,
+    setMinorStepDone,
     setNuUser,
     setNuUserPolicyId,
     setBobPolicyId,
@@ -169,7 +196,7 @@ const initialState: OpenDRMManagerState = {
     },
     {
       label: "2",
-      title: "Register Nu Account",
+      title: "Register Nu Wallet",
       done: false,
       active: false,
     },
@@ -178,6 +205,11 @@ const initialState: OpenDRMManagerState = {
       title: "Encrypt and Mint",
       done: false,
       active: false,
+      minorSteps: [
+        { label: "A", title: "Encrypt", done: false, active: true },
+        { label: "B", title: "Mint", done: false, active: false },
+        { label: "C", title: "Policy", done: false, active: false },
+      ],
     },
     {
       label: "4",
@@ -190,6 +222,11 @@ const initialState: OpenDRMManagerState = {
       title: "Transfer NFT",
       done: false,
       active: false,
+      minorSteps: [
+        { label: "A", title: "Transfer", done: false, active: true },
+        { label: "B", title: "Policy", done: false, active: false },
+        { label: "C", title: "Decrypt", done: false, active: false },
+      ],
     },
   ],
 };

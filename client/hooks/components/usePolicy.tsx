@@ -10,18 +10,17 @@ import { OPENDRM721_ADDRESS } from "utils/constants";
 
 export interface PolicyHook {
   policyId: string | undefined;
-  setStepDone: (stepIndex: number) => void;
+  onPolicyCreated: () => void;
 }
 
 export function usePolicy(props: PolicyHook) {
-  const { setStepDone, policyId } = props;
-  const { push } = useRouter();
+  const { onPolicyCreated, policyId } = props;
+
   const { library } = useWeb3React<Web3Provider>("Network");
   const handlePolicyCreated: TypedListener<PolicyFulfilledEvent> = (
     policyId
   ) => {
-    setStepDone(2);
-    push("/step4");
+    onPolicyCreated()
   };
 
   useEffect(() => {
@@ -34,7 +33,6 @@ export function usePolicy(props: PolicyHook) {
       const policyFilter = openDRM721.filters.PolicyFulfilled(
         `${policyId}00000000000000000000000000000000`
       );
-      console.log(policyFilter);
       openDRM721.on(policyFilter, handlePolicyCreated);
       return () => {
         openDRM721.off(policyFilter, handlePolicyCreated);

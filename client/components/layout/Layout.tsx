@@ -3,6 +3,7 @@ import Head from "next/head";
 import Sidebar from "./Sidebar";
 import Content from "./Content";
 import Loading from "./Loading";
+import WrongChainModal from "./WrongChainModal";
 import { useOpenDRM } from "hooks/provider/useOpenDRM";
 
 export default function Layout(props: React.HTMLAttributes<HTMLBodyElement>) {
@@ -25,9 +26,10 @@ export default function Layout(props: React.HTMLAttributes<HTMLBodyElement>) {
 
       <div className="flex h-auto min-h-screen w-screen font-primary">
         <Sidebar />
-        <main className="w-full h-full ">
+        <main className="w-full h-auto ">
           <Content>{props.children}</Content>
         </main>
+        <WrongChainModal />
       </div>
     </>
   );

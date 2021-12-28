@@ -3,13 +3,8 @@ import { useWeb3React } from "@web3-react/core";
 import { useEncrypt } from "hooks/components/useEncrypt";
 import { useMint } from "hooks/components/useMint";
 import { usePolicy } from "hooks/components/usePolicy";
-import { useAbioticAlice } from "hooks/nucypher/useAbioticAlice";
-import { useEnrico } from "hooks/nucypher/useEnrico";
 import { useOpenDRM } from "hooks/provider/useOpenDRM";
-import { Step } from "providers/OpenDRMContextProvider";
-import { useEffect, useState } from "react";
-import { OpenDRM721__factory } from "types";
-import { OPENDRM721_ADDRESS } from "utils/constants";
+import { useRouter } from "next/router";
 
 export function useStep3() {
   const {
@@ -17,27 +12,17 @@ export function useStep3() {
     setMetadata,
     tokenId,
     setStepDone,
+    setMinorStepDone,
     nuUser,
     setNuUserPolicyId,
     nuUserPolicyId,
     setLabel,
   } = useOpenDRM();
-  const { getPolicyId } = useAbioticAlice();
+  const { push } = useRouter();
   const { library, chainId } = useWeb3React<Web3Provider>();
-  const [localSteps, setLocalSteps] = useState<Step[]>([
-    { label: "A", title: "Encrypt", done: false, active: true },
-    { label: "B", title: "Mint", done: false, active: false },
-    { label: "C", title: "Policy", done: false, active: false },
-  ]);
 
   const setLocalStepDone = (stepIndex: number) => {
-    const steps_ = [...localSteps];
-    for (var i = 0; i <= stepIndex; i++) {
-      steps_[i].done = true;
-      steps_[i].active = false;
-    }
-    steps_[stepIndex + 1].active = true;
-    setLocalSteps(steps_);
+    setMinorStepDone(2, stepIndex);
   };
 
   const encryptProps = useEncrypt({
@@ -53,10 +38,15 @@ export function useStep3() {
 
   const mintProps = useMint({ setLocalStepDone, library, tokenId });
 
-  const policyProps = usePolicy({ setStepDone, policyId: nuUserPolicyId });
+  const onPolicyCreated = () => {
+    setStepDone(2);
+    push("/step4");
+  };
+
+  usePolicy({ onPolicyCreated, policyId: nuUserPolicyId });
 
   return {
-    localSteps,
+    localSteps: steps[2].minorSteps!,
     encryptProps,
     mintProps,
     tokenId,

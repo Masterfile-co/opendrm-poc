@@ -13,7 +13,7 @@ export default function MetadataField() {
 
   return (
     <div className=" mb-0 p-[15px] w-full">
-      <div className="bg-[#313133] w-full max-w-[320px] overflow-hidden min-h-[190px] rounded-sm text-white text-xs p-2">
+      <div className="bg-[#1B1B1D] w-full max-w-[320px] overflow-hidden min-h-[190px] rounded-sm text-white text-xs p-2 border border-[#313133]">
         <span className="text-white text-sm font-bold font-secondary">
           NFT Metadata:
         </span>

@@ -15,7 +15,7 @@ export default function Sidebar() {
           height={66}
           layout="responsive"
         />
-      </div>
+      </div>v
       <VerticleSteps />
       <MetadataField />
     </div>

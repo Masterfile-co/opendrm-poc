@@ -17,6 +17,9 @@ export const OpenDRMContext = createContext<OpenDRMContext>({
   setStepDone: (stepIndex: number) => {
     throw new Error("Not Initialized");
   },
+  setMinorStepDone: (stepIndex: number, minorStepIndex) => {
+    throw new Error("Not Initialized");
+  },
   setNuUser: (user: Bob) => {
     throw new Error("Not Initialized");
   },
@@ -47,8 +50,12 @@ export interface Step {
   active: boolean;
 }
 
+export interface MajorStep extends Step {
+  minorSteps?: Step[];
+}
+
 export interface OpenDRMManagerState {
-  steps: Step[];
+  steps: MajorStep[];
   nuUser?: Bob;
   metadata?: Metadata;
   loading: boolean;
@@ -61,6 +68,7 @@ export interface OpenDRMManagerState {
 export interface OpenDRMContext extends OpenDRMManagerState {
   setMetadata: (metadata: Metadata) => void;
   setStepDone: (stepIndex: number) => void;
+  setMinorStepDone: (stepIndex: number, minorStepIndex: number) => void;
   setNuUser: (user: Bob) => void;
   setNuUserPolicyId: (policyId: string) => void;
   setBobPolicyId: (policyId: string) => void;

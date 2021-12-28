@@ -82,7 +82,8 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
       policy.id.toBytes(),
       policy.expirationTimestamp,
       policy.valueInWei,
-      _nodes
+      _nodes,
+      {gasLimit: 700_000}
     );
     await policytx.wait();
 
