@@ -6,6 +6,7 @@ import "hardhat-deploy";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import "@nomiclabs/hardhat-etherscan";
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -35,8 +36,8 @@ const config: HardhatUserConfig = {
     goerli: {
       url: process.env.GOERLI_URL || "",
       accounts: {
-        mnemonic: process.env.MNEMONIC || ""
-      }
+        mnemonic: process.env.MNEMONIC || "",
+      },
     },
     hardhat: {
       // mining: {

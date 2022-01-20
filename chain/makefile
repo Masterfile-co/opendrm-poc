@@ -34,5 +34,8 @@ typechain/client:
 typechain/server:
 	TYPECHAIN_DIR=../server/src/types yarn hardhat typechain
 
+verify:
+	yarn hardhat etherscan-verify --network goerli
+
 install:
 	yarn --registry http://localhost:4873/

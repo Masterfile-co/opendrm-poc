@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.3",
-    "@nomiclabs/hardhat-etherscan": "^2.1.8",
+    "@nomiclabs/hardhat-etherscan": "^3.0.0",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "^4.4.0",
     "@typechain/ethers-v5": "^8.0.5",
@@ -17,7 +17,7 @@
     "hardhat": "^2.7.0",
     "hardhat-deploy": "^0.9.14",
     "hardhat-gas-reporter": "^1.0.6",
-    "nucypher-ts": "0.4.5",
+    "nucypher-ts": "0.5.0",
     "solidity-coverage": "^0.7.17",
     "ts-node": "^10.4.0",
     "typechain": "^6.0.5",
