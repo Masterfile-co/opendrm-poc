@@ -9,8 +9,9 @@ import { PolicyRequestedEvent } from "./types/AbioticAliceManager";
 import { fromHexString } from "./utils";
 import { HRAC } from "nucypher-ts/build/main/src/policies/hrac";
 import { hexlify, toUtf8Bytes, zeroPad } from "ethers/lib/utils";
+import { PreEnactedPolicy } from "nucypher-ts/build/main/src/policies/policy";
 
-let enactedPolicies: { [policyId: string]: EnactedPolicy } = {};
+let enactedPolicies: { [policyId: string]: PreEnactedPolicy } = {};
 
 const NuConfig = {
   porterUri: "https://porter-lynx.nucypher.community/",
@@ -63,7 +64,7 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
   );
   console.log();
 
-  const policy = await nuAlice.generatePolicy({
+  const policy = await nuAlice.generatePreEnactedPolicy({
     label,
     bob: {
       verifyingKey,
@@ -75,13 +76,12 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
   });
   const policyId = utils.hexlify(policy.id.toBytes());
 
-  const _nodes = policy.ursulas.map((ursula) => ursula.checksumAddress);
-
+  const _nodes = policy.ursulaAddresses
   try {
     const policytx = await abioticAliceManager.fulfillPolicy(
       policy.id.toBytes(),
-      policy.expirationTimestamp,
-      policy.valueInWei,
+      policy.expiration.toString(),
+      policy.value,
       _nodes,
       {gasLimit: 700_000}
     );
@@ -122,7 +122,7 @@ app.get("/policy", async (req: Request<any, any, any, PolicyQuery>, res) => {
       },
       policyKey: hexlify(_policy.policyKey.toBytes()),
       aliceVerifyingKey: hexlify(_policy.aliceVerifyingKey),
-      ursulas: _policy.ursulas,
+      ursulas: _policy.ursulaAddresses,
     };
     res.status(200).json(policy);
   } else {

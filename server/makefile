@@ -8,3 +8,9 @@ up/local:
 
 up/goerli:
 	export NETWORK=goerli && yarn dev
+
+start:
+	yarn start
+
+build:
+	
