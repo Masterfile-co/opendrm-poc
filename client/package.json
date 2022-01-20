@@ -19,7 +19,7 @@
     "axios": "^0.24.0",
     "ethers": "^5.5.2",
     "next": "12.0.7",
-    "nucypher-ts": "npm:@masterfile-co/nucypher-ts@0.4.5",
+    "nucypher-ts": "0.5.0",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },

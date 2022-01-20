@@ -40,7 +40,7 @@ export function useDecrypt(props: DecryptHook) {
     }
 
     decryptMetadata(nuUser, nuUserPolicyId, metadata).catch((err) => {
-      console.log(err);
+      alert(err.message);
     });
   };
   const decryptAsBob = async () => {

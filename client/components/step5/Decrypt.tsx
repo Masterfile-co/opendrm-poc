@@ -6,10 +6,11 @@ export interface Decrypt {
   image: string;
   bobCleartext: string | undefined;
   decryptAsBob: () => Promise<void>;
+  decryptAsYou: () => Promise<void>
 }
 
 export default function Decrypt(props: Decrypt) {
-  const { image, bobCleartext, decryptAsBob } = props;
+  const { image, bobCleartext, decryptAsBob, decryptAsYou } = props;
   return (
     <div className="flex w-full justify-center space-x-10">
       <div className="flex flex-col items-center space-y-5">
@@ -19,10 +20,9 @@ export default function Decrypt(props: Decrypt) {
         <DecryptBox>{image}</DecryptBox>
         <PrimaryButton
           className="w-[215px]"
-          //   disabled={!image || !nuUserPolicyId || !active}
-          //   onClick={() => {
-          //     decrypt();
-          //   }}
+            onClick={() => {
+              decryptAsYou();
+            }}
         >
           Decrypt
         </PrimaryButton>

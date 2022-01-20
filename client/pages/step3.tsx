@@ -24,7 +24,21 @@ const Step3: NextLayoutComponentType = () => {
       </div>
       <DescriptionBox
         description={
-          "In this step you begin by encrypting your NFT metadata. Currently this is only text, but will support any media in the future. Your metadata, as it will be publicly stored, is shown in the bottom left corner. Next you will mint the NFT associated with this metadata. Minting the NFT will trigger a PRE policy to be created on your behalf, allowing the current NFT owner (you) to be able to decrypt the metadata."
+          <>
+            <span>
+              In this step you begin by encrypting your NFT metadata. Currently
+              this is only text, but will support any media in the future. Your
+              metadata, as it will be publicly stored, is shown in the bottom
+              left corner. Next you will mint the NFT associated with this
+              metadata. Minting the NFT will trigger a PRE policy to be created
+              on your behalf, allowing the current NFT owner (you) to be able to
+              decrypt the metadata. {" "}
+            </span>
+            <span className="text-[#Cf54AB]">
+              Occationally the demo will miss the policy creation event. If this
+              steps hangs for a few minutes please refresh and try again
+            </span>
+          </>
         }
       />
     </div>

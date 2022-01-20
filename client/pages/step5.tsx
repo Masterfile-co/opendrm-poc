@@ -24,7 +24,22 @@ const Step5: NextLayoutComponentType = () => {
       </div>
       <DescriptionBox
         description={
-          "In the final step of the demo we will be simulating transfering or selling your NFT to our friend Bob. This works like any other NFT transfer you may have done before (ERC-721/1155 backwards compatable). Immediately upon transferring, you will lose the ability to decrypt the NFT metadata. Once a policy has been created on behalf of Bob (again triggered by the transfer of the NFT), he will now be the only one able to decrypt the NFT metadata."
+          <>
+            <span>
+              In the final step of the demo we will be simulating transfering or
+              selling your NFT to our friend Bob. This works like any other NFT
+              transfer you may have done before (ERC-721/1155 backwards
+              compatable). Immediately upon transferring, you will lose the
+              ability to decrypt the NFT metadata. Once a policy has been
+              created on behalf of Bob (again triggered by the transfer of the
+              NFT), he will now be the only one able to decrypt the NFT
+              metadata. {" "}
+            </span>
+            <span className="text-[#Cf54AB]">
+              Occationally the demo will miss the policy creation event. If this
+              steps hangs for a few minutes please refresh and try again
+            </span>
+          </>
         }
       />
     </div>
