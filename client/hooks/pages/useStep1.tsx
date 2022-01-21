@@ -2,10 +2,11 @@ import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { useOpenDRM } from "hooks/provider/useOpenDRM";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { ConnectorNames, connectorsByName } from "utils/connectors";
 
 export function useStep1() {
-  const { activate } = useWeb3React<Web3Provider>();
+  const { activate, active } = useWeb3React<Web3Provider>();
   const { setStepDone, steps } = useOpenDRM();
   const { push } = useRouter();
 
@@ -15,6 +16,13 @@ export function useStep1() {
       push("/step2");
     });
   };
+
+  // useEffect(() => {
+  //   if (active) {
+  //     setStepDone(0);
+  //     push("/step2");
+  //   }
+  // }, []);
 
   return { requestConnection, done: steps[0].done };
 }

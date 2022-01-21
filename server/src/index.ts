@@ -80,7 +80,7 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
   try {
     const policytx = await abioticAliceManager.fulfillPolicy(
       policy.id.toBytes(),
-      policy.expiration.toString(),
+      policy.expiration.getTime()/1000,
       policy.value,
       _nodes,
       { gasLimit: 700_000 }

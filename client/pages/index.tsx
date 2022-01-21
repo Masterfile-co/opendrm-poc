@@ -10,9 +10,9 @@ import { ConnectorNames } from "utils/connectors";
 const Home: NextLayoutComponentType = () => {
   const { push } = useRouter();
 
-  useEffect(() => {
-    push("step1");
-  }, []);
+  // useEffect(() => {
+  //   push("step1");
+  // }, []);
 
   return (
     <div className="flex flex-col justify-center items-center w-full"></div>

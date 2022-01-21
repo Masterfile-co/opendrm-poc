@@ -9,6 +9,7 @@ up/local:
 up/goerli:
 	export NETWORK=goerli && yarn dev
 
+start: export NETWORK=goerli
 start:
 	yarn start
 
@@ -18,5 +19,6 @@ build:
 build/dev:
 	yarn build
 
+run: export NETWORK=goerli
 run:
-	@docker run -e PORT=$(PORT) -e NETWORK=$(NETWORK) -e ALICE_PRIVATE_KEY=$(ALICE_PRIVATE_KEY) -e ALICE_NU_SECRET_KEY=$(ALICE_NU_SECRET_KEY) -e ABIOTIC_ALICE_MANAGER_ADDRESS=$(ABIOTIC_ALICE_MANAGER_ADDRESS) opendrm-server
+	@export NETWORK=goerli && docker run -p 3001:3001 -e PORT=$(PORT) -e GOERLI_URL=$(GOERLI_URL) -e NETWORK=$(NETWORK) -e ALICE_PRIVATE_KEY=$(ALICE_PRIVATE_KEY) -e ALICE_NU_SECRET_KEY=$(ALICE_NU_SECRET_KEY) -e ABIOTIC_ALICE_MANAGER_ADDRESS=$(ABIOTIC_ALICE_MANAGER_ADDRESS) opendrm-server
