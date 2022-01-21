@@ -27,4 +27,8 @@ const Step1: NextLayoutComponentType = () => {
   );
 };
 
+Step1.getInitialProps = () => {
+  return {};
+};
+
 export default Step1;

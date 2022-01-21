@@ -22,3 +22,7 @@ build/dev:
 run: export NETWORK=goerli
 run:
 	@export NETWORK=goerli && docker run -p 3001:3001 -e PORT=$(PORT) -e GOERLI_URL=$(GOERLI_URL) -e NETWORK=$(NETWORK) -e ALICE_PRIVATE_KEY=$(ALICE_PRIVATE_KEY) -e ALICE_NU_SECRET_KEY=$(ALICE_NU_SECRET_KEY) -e ABIOTIC_ALICE_MANAGER_ADDRESS=$(ABIOTIC_ALICE_MANAGER_ADDRESS) opendrm-server
+
+push: ## Push production image of service to respository
+	@docker push 634967882344.dkr.ecr.us-west-2.amazonaws.com/masterfile:opendrm-server-$(GIT_SHA)
+	@docker push 634967882344.dkr.ecr.us-west-2.amazonaws.com/masterfile:opendrm-server-latest

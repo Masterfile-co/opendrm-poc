@@ -72,4 +72,8 @@ const Step2: NextLayoutComponentType = () => {
   );
 };
 
+Step2.getInitialProps = () => {
+  return {};
+};
+
 export default Step2;

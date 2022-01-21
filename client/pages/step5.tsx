@@ -11,7 +11,7 @@ const Step5: NextLayoutComponentType = () => {
   const { transferProps, decryptProps, active, localSteps, image } = useStep5();
 
   return (
-    <div className="flex flex-col min-h-screen items-center w-full h-full">
+    <div className="flex flex-col min-h-screen items-center w-full h-full px-5 pb-5">
       <HorizontalSteps steps={localSteps} />
       <div className="flex flex-grow h-full w-full justify-center items-center">
         {localSteps[0].active && (
@@ -33,7 +33,7 @@ const Step5: NextLayoutComponentType = () => {
               ability to decrypt the NFT metadata. Once a policy has been
               created on behalf of Bob (again triggered by the transfer of the
               NFT), he will now be the only one able to decrypt the NFT
-              metadata. {" "}
+              metadata.{" "}
             </span>
             <span className="text-[#Cf54AB]">
               Occationally the demo will miss the policy creation event. If this
@@ -46,7 +46,7 @@ const Step5: NextLayoutComponentType = () => {
   );
 };
 
-// 
+//
 Step5.getInitialProps = () => {
   return {};
 };

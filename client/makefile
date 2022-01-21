@@ -1,5 +1,5 @@
 install:
-	yarn --registry http://localhost:4873/
+	yarn
 
 up:
 	yarn dev
@@ -20,3 +20,7 @@ run:
 	-e NEXT_PUBLIC_ABIOTIC_ALICE_MANAGER_ADDRESS=$(NEXT_PUBLIC_ABIOTIC_ALICE_MANAGER_ADDRESS) \
 	-e ABIOTIC_ALICE_URL=$(ABIOTIC_ALICE_URL) \
 	opendrm-client
+
+push: ## Push production image of service to respository
+	@docker push 634967882344.dkr.ecr.us-west-2.amazonaws.com/masterfile:opendrm-client-$(GIT_SHA)
+	@docker push 634967882344.dkr.ecr.us-west-2.amazonaws.com/masterfile:opendrm-client-latest
