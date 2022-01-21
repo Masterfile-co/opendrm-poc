@@ -1,4 +1,4 @@
-FROM node:16.13.2-alpine AS dependencies
+FROM node:14.17.5-alpine AS dependencies
 
 WORKDIR /srv/
 
@@ -8,7 +8,7 @@ COPY package.json ./
 RUN yarn install
 
 ## Build
-FROM node:16.13.2-alpine AS builder
+FROM node:14.17.5-alpine AS builder
 
 WORKDIR /srv
 COPY src ./src
@@ -20,7 +20,7 @@ COPY --from=dependencies /srv/tsconfig.json ./tsconfig.json
 RUN yarn build && yarn install --production --ignore-scripts --prefer-offline
 
 ## Production
-FROM node:16.13.2-alpine AS prod
+FROM node:14.17.5-alpine AS prod
 WORKDIR /srv
 
 ENV NODE_ENV production

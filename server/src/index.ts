@@ -76,14 +76,14 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
   });
   const policyId = utils.hexlify(policy.id.toBytes());
 
-  const _nodes = policy.ursulaAddresses
+  const _nodes = policy.ursulaAddresses;
   try {
     const policytx = await abioticAliceManager.fulfillPolicy(
       policy.id.toBytes(),
       policy.expiration.toString(),
       policy.value,
       _nodes,
-      {gasLimit: 700_000}
+      { gasLimit: 700_000 }
     );
     await policytx.wait();
 
@@ -128,7 +128,6 @@ app.get("/policy", async (req: Request<any, any, any, PolicyQuery>, res) => {
   } else {
     res.status(404).send("No enacted policy");
   }
-  
 });
 
 interface TreasureMapParams {
