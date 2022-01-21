@@ -7,21 +7,21 @@ import { Capsule } from "umbral-pre";
 import { EncryptedTreasureMap } from "nucypher-ts/build/main/src/policies/collections";
 import { hexlify, keccak256, solidityPack } from "ethers/lib/utils";
 
-export function useAbioticAlice() {
-  // useEffect(() => {
-  //   if (abioticAlice) {
-  //     setPublicKey(abioticAlice.verifyingKey);
-  //     console.log(hexlify(abioticAlice.verifyingKey.toBytes()));
-  //   }
-  // }, [abioticAlice]);
+import getConfig from "next/config";
 
+const { publicRuntimeConfig } = getConfig();
+const { abioticAliceUrl } = publicRuntimeConfig;
+
+console.log(abioticAliceUrl);
+
+export function useAbioticAlice() {
   /**
    * Get Alice's verfying key
    * @returns Alice's verfiying key
    */
   const getVerifyingKey = async () => {
     return axios
-      .get("http://localhost:3001/verifyingKey", {
+      .get(`${abioticAliceUrl}/verifyingKey`, {
         responseType: "arraybuffer",
       })
       .then(({ data }) => {
@@ -36,7 +36,7 @@ export function useAbioticAlice() {
    */
   const getEncryptingKey = async (label: string) => {
     return axios
-      .get(`http://localhost:3001/encryptingKey?label=${label}`, {
+      .get(`${abioticAliceUrl}/encryptingKey?label=${label}`, {
         responseType: "arraybuffer",
       })
       .then(({ data }) => {
@@ -63,7 +63,7 @@ export function useAbioticAlice() {
     const params = { policyId };
 
     const resp: AxiosResponse<GetPolicyResponse> = await axios.get(
-      `http://localhost:3001/policy`,
+      `${abioticAliceUrl}/policy`,
       { params }
     );
 
@@ -82,31 +82,6 @@ export function useAbioticAlice() {
         fromHexString(resp.data.encryptedTreasureMap.cyphertext)
       ),
     };
-
-    // return axios
-    //   .get(`http://localhost:3001/policy?policyId=${policyId}`)
-    //   .then((res) => {
-    //     const _policy = res.data as EnactedPolicy;
-    //     const key = _policy.policyKey.toBytes();
-    //     console.log(JSON.stringify(key));
-    //     // console.log(PublicKey.fromBytes(_policy.policyKey));
-
-    //     // const policy: any = { ..._policy };
-    //     // policy.id = new HRAC(Uint8Array.from(Object.values(_policy.id.bytes)));
-    //     // policy.aliceVerifyingKey = Uint8Array.from(
-    //     //   Object.values(_policy.aliceVerifyingKey)
-    //     // );
-    //     // policy.encryptedTreasureMap.ciphertext = Uint8Array.from(
-    //     //   Object.values(_policy.encryptedTreasureMap.ciphertext)
-    //     // );
-    //     // policy.policyEncryptingKey = PublicKey.fromBytes(
-    //     //   Uint8Array.from(Object.values(_policy.policyEncryptingKey))
-    //     // );
-
-    //     // console.log(policy);
-
-    //     // return policy as EnactedPolicy;
-    //   });
   };
 
   return {

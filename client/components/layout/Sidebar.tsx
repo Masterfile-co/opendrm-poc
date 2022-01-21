@@ -14,6 +14,7 @@ export default function Sidebar() {
           width={300}
           height={66}
           layout="responsive"
+          alt="masterfile logo"
         />
       </div>
       <VerticleSteps />

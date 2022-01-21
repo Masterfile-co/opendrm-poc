@@ -1,5 +1,6 @@
 const withTM = require("next-transpile-modules")(["nucypher-ts"]);
 
+
 /** @type {import('next').NextConfig} */
 module.exports = withTM({
   reactStrictMode: true,
@@ -20,6 +21,10 @@ module.exports = withTM({
     });
 
     return config;
+  },
+  publicRuntimeConfig: {
+    // Will be available on both server and client
+    abioticAliceUrl: process.env.ABIOTIC_ALICE_URL,
   },
 });
 

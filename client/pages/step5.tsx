@@ -45,4 +45,10 @@ const Step5: NextLayoutComponentType = () => {
     </div>
   );
 };
+
+// 
+Step5.getInitialProps = () => {
+  return {};
+};
+
 export default Step5;

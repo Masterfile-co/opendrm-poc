@@ -7,6 +7,7 @@ import DescriptionBox from "components/layout/DescriptionBox";
 import { useStep3 } from "hooks/pages/useStep3";
 import { NextLayoutComponentType } from "next";
 import React from "react";
+import getConfig from "next/config";
 
 const Step3: NextLayoutComponentType = () => {
   const state = useStep3();
@@ -32,7 +33,7 @@ const Step3: NextLayoutComponentType = () => {
               left corner. Next you will mint the NFT associated with this
               metadata. Minting the NFT will trigger a PRE policy to be created
               on your behalf, allowing the current NFT owner (you) to be able to
-              decrypt the metadata. {" "}
+              decrypt the metadata.{" "}
             </span>
             <span className="text-[#Cf54AB]">
               Occationally the demo will miss the policy creation event. If this
@@ -43,6 +44,10 @@ const Step3: NextLayoutComponentType = () => {
       />
     </div>
   );
+};
+
+Step3.getInitialProps = () => {
+  return {};
 };
 
 export default Step3;
