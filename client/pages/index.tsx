@@ -32,14 +32,14 @@ const Home: NextLayoutComponentType = () => {
           Get Started
         </PrimaryButton>
         <div className=" justify-between w-[300px] items-center flex relative ">
-          <div className="block h-24 w-24 -mx-3 -my-3">
+          <div className="block h-16 w-16">
             <a
               href={"https://masterfile.co"}
               target="_blank"
               rel="noopener noreferrer"
             >
               <Image
-                src={"/masterfile-logo-purple.png"}
+                src={"/Masterfile-Logo-Circle.png"}
                 layout="responsive"
                 objectFit="cover"
                 height={120}
