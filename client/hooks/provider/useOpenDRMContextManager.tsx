@@ -63,7 +63,7 @@ export function useOpenDRMContextManager(): OpenDRMContext {
   const init = useCallback(async () => {
     
     if (!active || !library || !account) {
-      push("/step1");
+      push("/");
       setLoading(false);
       return;
     }
