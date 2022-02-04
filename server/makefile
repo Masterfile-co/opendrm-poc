@@ -1,7 +1,7 @@
 
 
 install:
-	yarn --registry http://localhost:4873/
+	yarn 
 
 up/local:
 	yarn dev

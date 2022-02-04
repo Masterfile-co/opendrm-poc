@@ -12,7 +12,7 @@ import getConfig from "next/config";
 const { publicRuntimeConfig } = getConfig();
 const { abioticAliceUrl } = publicRuntimeConfig;
 
-console.log(abioticAliceUrl);
+console.log("abioticAliceUrl", abioticAliceUrl);
 
 export function useAbioticAlice() {
   /**

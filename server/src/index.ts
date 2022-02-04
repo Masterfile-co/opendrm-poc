@@ -17,6 +17,13 @@ const NuConfig = {
   porterUri: "https://porter-lynx.nucypher.community/",
 };
 
+console.log("NETWORK", process.env.NETWORK)
+console.log("GOERLI_URL", process.env.GOERLI_URL)
+console.log("ALICE_PRIVATE_KEY", process.env.ALICE_PRIVATE_KEY)
+console.log("ALICE_NU_SECRET_KEY", process.env.ALICE_NU_SECRET_KEY)
+console.log("ABIOTIC_ALICE_MANAGER_ADDRESS", process.env.ABIOTIC_ALICE_MANAGER_ADDRESS)
+
+
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 3001;
