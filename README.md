@@ -1,6 +1,8 @@
 # OpenDRM Proof of Concept Demo
 
-This is a proof of concept demo of the encrypted NFT protocol know as OpenDRM. We are leveraging NuCypher (soon to be Threshold) [Umbral PRE](https://www.nucypher.com/proxy-re-encryption) service to manage access to the underlying encrypted metadata associated with each NFT. 
+[Try out the demo here!](https://opendrm-client.dev.masterfile.co/)
+
+This is a proof of concept demo of the encrypted NFT protocol know as OpenDRM. We are leveraging Threshold's [Umbral PRE](https://www.nucypher.com/proxy-re-encryption) service to manage access to the underlying encrypted metadata associated with each NFT. 
 
 The goal of the OpenDRM protocol is to provide a completely decentralized digital rights management (DRM) solution. In the OpenDRM protocol, solely the holder of the NFT will have rights to decrypt and access the media underlying that NFT. Future extensions of the protocol will also include the abilty to deletate access to decrypt the media at the will of the NFT holder. This will allow for OpenDRM enabled NFTs to potentially become yield bearing assets where the owner can charge for privlidged access to their collection. 
 
@@ -16,10 +18,6 @@ It is reccomended that the user is familair with the workings of the [NuCypher n
 - After transferring the NFT, the previous owner shall lose access to decrypt the underlying media
 
 ## Demo Steps
-
-  - WIP: Still messing and being deployed to testnet
-  - Using a modified version of [nucypher-ts](https://github.com/Masterfile-co/nucypher-ts/tree/decouple-policy-generation)
-  
 
 ### Step 1: Connect Wallet
 
@@ -47,7 +45,7 @@ This label will be sent to `Alice` where it will be combined with her secret mat
 
 Next comes the actual minting of the encrypted NFT. As the token is created (transfered from `0x00...00` to the minter) the `_beforeTokenTransfer` hook function is called. Within this function, the `requestPolicy` method on the `AbioticAliceManager` smart contract is invoked with details about what token is transferred to who, along with the policy details required for PRE. 
 
-In this demo `Abiotic Alice` (or the centralized stand in for her) is modeled after the Chainlink oracle architecture, using a request/recieve data cycle. `Abiotic Alice` will be listening for the `PolicyRequested` event, emitted within the `requestPolicy` function and containing the details needed for creating the supporting materials for a new `Policy`. `AbioticAlice` will then call the `fulfillPolicy` method on `AbioticAliceManager` passing in the policy details (nodes, cost, etc). This will be forwarded to the `OpenDRM721.fulfillPolicy` method which is responsible for the creation of a new policy by calling `PolicyManager.createPolicy`. 
+In this demo `Abiotic Alice` (or the centralized stand-in for her) is modeled after the Chainlink oracle architecture, using a request/recieve data cycle. `Abiotic Alice` will be listening for the `PolicyRequested` event, emitted within the `requestPolicy` function and containing the details needed for creating the supporting materials for a new `Policy`. `AbioticAlice` will then call the `fulfillPolicy` method on `AbioticAliceManager` passing in the policy details (nodes, cost, etc). This will be forwarded to the `OpenDRM721.fulfillPolicy` method which is responsible for the creation of a new policy by calling `PolicyManager.createPolicy`. 
 
 ![Screen Shot 2021-12-16 at 2 53 03 PM](https://user-images.githubusercontent.com/54160127/146447403-bd7305a8-8706-46ec-ae9a-54dd97ceab74.png)
 
@@ -68,6 +66,7 @@ This cycle is repeated for all subsequent transfers so that once the NFT is tran
 ## Improvements Needed
 
 - Payment mechanisms for Abiotic Alice
+- Payment mechanisms for PRE policies
 - Abiotic Alice dispute mechanisms
 - Incorperating decentralized Abiotic Alice (when launched)
 - Extending PRE policies after they expire
