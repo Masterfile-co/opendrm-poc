@@ -18,10 +18,10 @@ task("register")
 
     const bob = await ethers.getSigner(args.address);
 
-    console.log(await bob.getBalance());
+    const coordDeployment = await deployments.get("OpenDRMCoordinator");
 
     const coordinator = OpenDRMCoordinator__factory.connect(
-      "0xB4F1e9004dEa24E7E9387dF9a0289227Ca883259",
+      coordDeployment.address,
       bob
     );
 

@@ -8,17 +8,17 @@ import {
 
 task("mint")
   .addParam("tokenId")
+  .addParam("address")
   .setAction(async (args, hre) => {
-    
     const { deployments, getNamedAccounts, ethers } = hre;
 
     const { bob: bobAddress, charlie } = await getNamedAccounts();
 
     const bob = await ethers.getSigner(bobAddress);
-    
 
     const odrm = OpenDRM721v2__factory.connect(
-      "0x743b40E0467a951972B3Bf7D6AA1d82364de2EF6",
+      // "0x743b40E0467a951972B3Bf7D6AA1d82364de2EF6",
+      args.address,
       bob
     );
 
@@ -27,5 +27,4 @@ task("mint")
     };
     const tx = await odrm.mint(args.tokenId, overrides);
     const res = await tx.wait();
-
   });

@@ -16,6 +16,9 @@ deploy/local:
 deploy/goerli:
 	yarn hardhat deploy --network goerli
 
+deploy/mumbai:
+	yarn hardhat deploy --network mumbai
+
 transfer:
 	yarn hardhat run scripts/transfer.ts --network localhost
 
@@ -38,7 +41,7 @@ typechain/server:
 	TYPECHAIN_DIR=../server/src/types yarn hardhat typechain
 
 verify:
-	yarn hardhat etherscan-verify --network goerli
+	yarn hardhat etherscan-verify --network mumbai
 
 install:
 	yarn --registry http://localhost:4873/

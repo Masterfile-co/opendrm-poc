@@ -33,11 +33,11 @@ console.log("DKG_MANAGER_ADDRESS", process.env.DKG_MANAGER_ADDRESS);
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 3001;
-// const providerUrl =
-//   process.env?.NETWORK == "mumbai"
-//     ? (process.env.MUMBAI_URL as string)
-//     : "http://0.0.0.0:8545/";
-const providerUrl = "http://0.0.0.0:8545/";
+const providerUrl =
+  process.env?.NETWORK == "mumbai"
+    ? (process.env.MUMBAI_URL as string)
+    : "http://0.0.0.0:8545/";
+// const providerUrl = "http://0.0.0.0:8545/";
 const provider = new providers.JsonRpcProvider(providerUrl);
 const wallet = new Wallet(process.env.ALICE_PRIVATE_KEY as string, provider);
 
@@ -65,20 +65,34 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
   endTimestamp,
   label
 ) => {
-  const verifyingKey = PublicKey.fromBytes(
-    fromHexString(_verifyingKey.slice(2))
-  );
-  const decryptingKey = PublicKey.fromBytes(
-    fromHexString(_decryptingKey.slice(2))
-  );
+  console.log({
+    subscriptionId,
+    consumer,
+    _verifyingKey,
+    _decryptingKey,
+    size,
+    threshold,
+    startTimestamp,
+    endTimestamp,
+    label,
+  });
 
-  console.log(
-    `handling policy with label: ${label}, publisher verifying key: ${utils.hexlify(
-      nuAlice.verifyingKey.toBytes()
-    )}, recipient verifying key: ${_verifyingKey}`
-  );
-  console.log();
   try {
+    // Handle key errors
+    const verifyingKey = PublicKey.fromBytes(
+      fromHexString(_verifyingKey.slice(2))
+    );
+    const decryptingKey = PublicKey.fromBytes(
+      fromHexString(_decryptingKey.slice(2))
+    );
+
+    console.log(
+      `handling policy with label: ${label}, publisher verifying key: ${utils.hexlify(
+        nuAlice.verifyingKey.toBytes()
+      )}, recipient verifying key: ${_verifyingKey}`
+    );
+    console.log();
+
     const policyParams: BlockchainPolicyParameters = {
       bob: RemoteBob.fromKeys(decryptingKey, verifyingKey),
       label,

@@ -6,6 +6,9 @@ install:
 up/local:
 	yarn dev
 
+up/mumbai:
+	export NETWORK=mumbai && yarn dev
+
 up/goerli:
 	export NETWORK=goerli && yarn dev
 
