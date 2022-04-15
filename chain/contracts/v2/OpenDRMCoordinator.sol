@@ -4,7 +4,7 @@ pragma solidity 0.8.13;
 import {DKGSubscriptionManager} from "./DKGSubscriptionManager.sol";
 import {IPRESubscriptionManager} from "./IPRESubscriptionManager.sol";
 
-import {OpenDRM721} from "./OpenDRM721.sol";
+import {OpenDRM721v2} from "./OpenDRM721.sol";
 
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 
@@ -55,6 +55,14 @@ contract OpenDRMCoordinator {
         );
     }
 
+    function getNextDeployment() external view returns (address deployment) {
+        return
+            Clones.predictDeterministicAddress(
+                odrm721Implementation,
+                bytes32(_salt)
+            );
+    }
+
     function deployOpenDRM(string memory _name, string memory _symbol)
         external
     {
@@ -65,7 +73,12 @@ contract OpenDRMCoordinator {
         );
 
         // Initialize contract
-        OpenDRM721(odrm721).initialize(dkgManager, preManager, _name, _symbol);
+        OpenDRM721v2(odrm721).initialize(
+            dkgManager,
+            preManager,
+            _name,
+            _symbol
+        );
 
         // Add as subscription consumer
         dkgManager.addConsumer(subscriptionId, odrm721);

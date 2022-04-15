@@ -18,6 +18,10 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+import "./tasks/mint";
+import "./tasks/register";
+import "./tasks/deploy";
+
 const accounts = [];
 
 process.env.DEPLOYER_PRIVATE_KEY !== undefined
@@ -39,10 +43,22 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.MNEMONIC || "",
       },
     },
+    mumbai: {
+      url: process.env.MUMBAI_URL || "",
+      accounts: {
+        mnemonic: process.env.MNEMONIC || "",
+      },
+    },
     hardhat: {
-      // mining: {
-      //   interval: 2000,
+      // forking: {
+      //   url: process.env.MUMBAI_URL || "",
+      //   blockNumber: 25941385,
       // },
+    },
+    localhost: {
+      accounts: {
+        mnemonic: process.env.MNEMONIC || "",
+      },
     },
   },
   gasReporter: {

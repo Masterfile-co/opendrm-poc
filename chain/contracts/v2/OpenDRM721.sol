@@ -11,7 +11,7 @@ import {OpenDRMConsumer} from "./OpenDRMConsumer.sol";
 
 import "hardhat/console.sol";
 
-contract OpenDRM721 is ERC721Upgradeable, OpenDRMConsumer {
+contract OpenDRM721v2 is ERC721Upgradeable, OpenDRMConsumer {
     using Strings for uint256;
     using LibNuCypher for string;
 
@@ -39,18 +39,20 @@ contract OpenDRM721 is ERC721Upgradeable, OpenDRMConsumer {
     }
 
     function mint(uint256 tokenId) public payable {
+        console.log("running");
         // pre feeRate * _size * _duration = cpp (cost per policy)
         // cpp * 100 = cost of minting funds 100 future transfers
 
         // This is to simulate the foundation tokenomics model we are thinking for OpenDRM
-        // In realitity it will be time based rather than transfer based as you should 
-        // recover unused funds when revoking an active policy 
+        // In realitity it will be time based rather than transfer based as you should
+        // recover unused funds when revoking an active policy
 
-        // Ideally this mintRate fee will be deposited in some yield bearing protocol. The yield 
+        // Ideally this mintRate fee will be deposited in some yield bearing protocol. The yield
         // from this should be enough to cover a perpetual active policy for the token holder
         uint256 mintRate = 1000000000 * 3 * 86000 * 100;
 
         if (msg.value < mintRate) {
+            console.log("failing");
             revert InsufficientMintFunds(mintRate, msg.value);
         }
 
@@ -62,6 +64,7 @@ contract OpenDRM721 is ERC721Upgradeable, OpenDRMConsumer {
         address to,
         uint256 tokenId
     ) internal override {
+        console.log("_beforeTokenTransfer");
         string memory label = getFullLabel(tokenId);
 
         bytes16 policyId;
@@ -69,6 +72,7 @@ contract OpenDRM721 is ERC721Upgradeable, OpenDRMConsumer {
 
         // Revoke old policy
         {
+            console.log("revoking old policy");
             (bytes memory verifyingKey, ) = _openDrmCoordinator.checkRegistry(
                 from
             );
@@ -81,6 +85,7 @@ contract OpenDRM721 is ERC721Upgradeable, OpenDRMConsumer {
         }
         // Request new policy
         {
+            console.log("requesting new policy");
             (
                 bytes memory verifyingKey,
                 bytes memory decryptingKey
@@ -89,7 +94,9 @@ contract OpenDRM721 is ERC721Upgradeable, OpenDRMConsumer {
             // TODO: Handle if user not registered. Can probably skip policy and let them create one later?
 
             policyId = label.toPolicyId(aliceVerifyingKey, verifyingKey);
+
             isValidPolicy[policyId] = true;
+            console.log("calling internal create policy");
             createPolicy(
                 policyId,
                 _size,

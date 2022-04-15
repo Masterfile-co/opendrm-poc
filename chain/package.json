@@ -18,7 +18,6 @@
     "hardhat": "^2.7.0",
     "hardhat-deploy": "^0.9.14",
     "hardhat-gas-reporter": "^1.0.6",
-    "nucypher-ts": "0.5.0",
     "solidity-coverage": "^0.7.17",
     "ts-node": "^10.4.0",
     "typechain": "^6.0.5",
@@ -32,5 +31,8 @@
     "postinstall": "yarn compile && yarn typechain",
     "typechain": "yarn hardhat typechain",
     "compile": "yarn hardhat compile"
+  },
+  "dependencies": {
+    "@nucypher/nucypher-ts": "^0.7.0"
   }
 }

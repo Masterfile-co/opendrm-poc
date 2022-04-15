@@ -6,23 +6,16 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await getNamedAccounts();
   const { deploy } = deployments;
 
-  const AbioticAlice = await deployments.get("AbioticAliceManager");
-
-  await deploy("OpenDRM721", {
+  await deploy("DKGSubscriptionManager", {
     from: deployer,
-    args: ["0xaC5e34d3FD41809873968c349d1194D23045b9D2", AbioticAlice.address],
+    args: [
+      "0x036bd8188183e5c251065d1b22cb52c20f31a88fbf01b1eb75b5cbd5896d76c3e0", // Alice VerifyingKey
+      1000000000,
+    ],
     log: true,
     deterministicDeployment: false,
   });
-
-  const OpenDRM721 = await deployments.get("OpenDRM721");
-  const signer = await ethers.getSigner(deployer);
-
-  const tx = await signer.sendTransaction({
-    to: OpenDRM721.address,
-    value: ethers.utils.parseEther("0.5"),
-  });
-  await tx.wait()
 };
 
+deploy.tags = ["DKG"];
 export default deploy;

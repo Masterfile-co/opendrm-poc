@@ -57,8 +57,8 @@ contract DKGSubscriptionManager is Ownable {
     uint256 public feeRate;
     uint256 internal subscriptionNonce;
 
-    mapping(uint256 => SubscriptionConfig) subscriptions;
-    mapping(address => mapping(uint256 => uint256)) consumers;
+    mapping(uint256 => SubscriptionConfig) public subscriptions;
+    mapping(address => mapping(uint256 => uint256)) public consumers;
 
     modifier onlySubscriber(uint256 _subscriptionId) {
         if (subscriptions[_subscriptionId].owner != msg.sender) {
@@ -87,7 +87,7 @@ contract DKGSubscriptionManager is Ownable {
         // TODO: Check payment
         uint256 requiredPayment = _dkgNodes * _duration * feeRate;
 
-        if (requiredPayment == msg.value) {
+        if (requiredPayment != msg.value) {
             revert InvalidFunding(requiredPayment, msg.value);
         }
 

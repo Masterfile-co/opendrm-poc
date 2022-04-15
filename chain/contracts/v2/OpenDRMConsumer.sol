@@ -6,6 +6,8 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {DKGSubscriptionManager} from "./DKGSubscriptionManager.sol";
 import {IPRESubscriptionManager} from "./IPRESubscriptionManager.sol";
 
+import "hardhat/console.sol";
+
 abstract contract OpenDRMConsumer is Initializable {
     DKGSubscriptionManager private _dkgManager;
     IPRESubscriptionManager private _preManager;
@@ -34,11 +36,14 @@ abstract contract OpenDRMConsumer is Initializable {
         bytes memory _verifyingKey,
         bytes memory _decryptingKey
     ) internal {
+        console.log("policy cost");
+
         uint256 policyCost = _preManager.getPolicyCost(
             _size,
             _startTimestamp,
             _endTimestamp
         );
+        console.log(policyCost);
 
         _preManager.createPolicy{value: policyCost}(
             _policyId,
@@ -47,6 +52,9 @@ abstract contract OpenDRMConsumer is Initializable {
             _startTimestamp,
             _endTimestamp
         );
+
+        console.log("requesting policy");
+        
         _dkgManager.requestPolicy(
             _subscriptionId,
             _policyId,

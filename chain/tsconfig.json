@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es2018",
+    "target": "es2017",
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
     "outDir": "dist",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowJs": true
   },
-  "include": ["./scripts", "./test", "./types", "./deploy"],
+  "include": ["./scripts", "./test", "./types", "./deploy", "./tasks", "./node_modules/@nucypher/nucypher-ts/build"],
   "files": ["./hardhat.config.ts"]
 }
