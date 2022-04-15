@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0
-pragma solidity 0.8.4;
+pragma solidity 0.8.13;
 
-import {LibNuCypher} from "./LibNuCypher.sol";
+import {LibNuCypher} from "../LibNuCypher.sol";
 import {OpenDRM721} from "./OpenDRM721.sol";
 
 import "hardhat/console.sol";
@@ -91,7 +91,7 @@ contract AbioticAliceManager {
 
     /**
      * @notice Quick and dirty way to map eth material -> PRE material.
-     * @dev Would be very nice to get rid of this step and have determanistic mapping
+     * @dev Would be very nice to get rid of this step and have deterministic mapping
      */
     function registerMe(
         bytes calldata _bobVerifyingKey,

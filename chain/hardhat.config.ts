@@ -31,7 +31,7 @@ process.env.ALICE_PRIVATE_KEY !== undefined
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.4",
+  solidity: "0.8.13",
   networks: {
     goerli: {
       url: process.env.GOERLI_URL || "",

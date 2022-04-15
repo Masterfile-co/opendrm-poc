@@ -1,0 +1,175 @@
+// SPDX-License-Identifier: AGPL-3.0
+pragma solidity 0.8.13;
+
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+
+contract DKGSubscriptionManager is Ownable {
+    // ERRORS
+    error NotSubscriptionOwner(uint256 subscriptionId, address caller);
+    error NotSubscriptionConsumer(uint256 subscriptionId, address caller);
+    error InvalidFunding(uint256 fundsRequired, uint256 fundsProvided);
+    error SubscriptionExpired(uint256 subscriptionId);
+
+    // EVENTS
+    event SubscriptionCreated(
+        uint256 indexed subscriptionId,
+        address indexed owner,
+        uint16 dkgNodes,
+        uint32 endTimestamp
+    );
+    event ConsumerAdded(
+        uint256 indexed subscriptionId,
+        address indexed consumer
+    );
+    event PolicyRequested(
+        uint256 indexed subscriptionId,
+        bytes16 indexed policyId,
+        address indexed consumer,
+        bytes verifyingKey,
+        bytes decryptingKey,
+        uint16 _size,
+        uint16 _threshold,
+        uint32 _startTimestamp,
+        uint32 _endTimestamp
+    );
+
+    // TODO: Pack Struct
+    struct SubscriptionConfig {
+        address payable owner;
+        // Security level of dkg
+        uint16 dkgNodes;
+        // When subscription ends
+        uint32 endTimestamp;
+        uint16 numConsumers;
+    }
+
+    struct PolicyRequest {
+        bytes16 policyId;
+        // TODO: Check the size of these keys
+        bytes verifyingKey;
+        bytes decryptingKey;
+        uint32 startTimestamp;
+        uint32 endTimestamp;
+    }
+
+    bytes public verifyingKey;
+    // Per-second, per-node service fee rate
+    uint256 public feeRate;
+    uint256 internal subscriptionNonce;
+
+    mapping(uint256 => SubscriptionConfig) subscriptions;
+    mapping(address => mapping(uint256 => uint256)) consumers;
+
+    modifier onlySubscriber(uint256 _subscriptionId) {
+        if (subscriptions[_subscriptionId].owner != msg.sender) {
+            revert NotSubscriptionOwner(_subscriptionId, msg.sender);
+        }
+        _;
+    }
+
+    modifier onlyConsumer(uint256 _subscriptiondId) {
+        if (consumers[msg.sender][_subscriptiondId] == 0) {
+            revert NotSubscriptionConsumer(_subscriptiondId, msg.sender);
+        }
+        _;
+    }
+
+    constructor(bytes memory _verifyingKey, uint256 _feeRate) {
+        verifyingKey = _verifyingKey;
+        feeRate = _feeRate;
+    }
+
+    function createSubscription(
+        uint16 _dkgNodes,
+        // Duration of subscription
+        uint32 _duration
+    ) external payable returns (uint256 subscriptionId) {
+        // TODO: Check payment
+        uint256 requiredPayment = _dkgNodes * _duration * feeRate;
+
+        if (requiredPayment == msg.value) {
+            revert InvalidFunding(requiredPayment, msg.value);
+        }
+
+        uint32 endTimestamp = uint32(block.timestamp + _duration);
+
+        // Save config
+        subscriptions[subscriptionNonce] = SubscriptionConfig(
+            payable(msg.sender),
+            _dkgNodes,
+            endTimestamp,
+            1
+        );
+        // Add owner as consumer
+        consumers[msg.sender][subscriptionNonce] = 1;
+
+        subscriptionNonce += 1;
+        emit SubscriptionCreated(
+            subscriptionId,
+            msg.sender,
+            _dkgNodes,
+            endTimestamp
+        );
+        emit ConsumerAdded(subscriptionId, msg.sender);
+    }
+
+    // function extendSubscription(uint256 _subscriptionId, uint256 _duration)
+    //     external
+    //     payable
+    //     onlySubscriber(_subscriptionId)
+    // {
+    //     // TODO: Emit Event
+    // }
+
+    /**
+     *
+     */
+    function addConsumer(uint256 _subscriptionId, address _consumer)
+        external
+        onlySubscriber(_subscriptionId)
+    {
+        // TODO: Set max consumers per subscription
+        consumers[_consumer][_subscriptionId] = 1;
+        subscriptions[_subscriptionId].numConsumers += 1;
+
+        emit ConsumerAdded(_subscriptionId, _consumer);
+    }
+
+    /**
+     * @dev consumer is responsible for making sure that these parameters line up with
+     * @dev polcy created on PRE SubscriptionManager
+     */
+    function requestPolicy(
+        uint256 _subscriptionId,
+        bytes16 _policyId,
+        // TODO: Check the size of these keys
+        bytes calldata _verifyingKey,
+        bytes calldata _decryptingKey,
+        uint16 _size,
+        uint16 _threshold,
+        uint32 _startTimestamp,
+        uint32 _endTimestamp
+    ) external onlyConsumer(_subscriptionId) {
+        if (subscriptions[_subscriptionId].endTimestamp < block.timestamp) {
+            revert SubscriptionExpired(_subscriptionId);
+        }
+
+        emit PolicyRequested(
+            _subscriptionId,
+            _policyId,
+            msg.sender,
+            _verifyingKey,
+            _decryptingKey,
+            _size,
+            _threshold,
+            _startTimestamp,
+            _endTimestamp
+        );
+    }
+
+    function sweep(address payable recipient) external onlyOwner {
+        uint256 balance = address(this).balance;
+        (bool sent, ) = recipient.call{value: balance}("");
+        require(sent, "Failed transfer");
+    }
+}

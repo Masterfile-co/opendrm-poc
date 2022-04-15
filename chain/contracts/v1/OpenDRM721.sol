@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0
-pragma solidity 0.8.4;
+pragma solidity 0.8.13;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {AbioticAliceManager} from "./AbioticAliceManager.sol";
 import {IPolicyManager} from "./IPolicyManager.sol";
-import {LibNuCypher} from "./LibNuCypher.sol";
+import {LibNuCypher} from "../LibNuCypher.sol";
 
 import "hardhat/console.sol";
 
@@ -69,11 +69,11 @@ contract OpenDRM721 is ERC721 {
         uint256 _valueInWei,
         address[] calldata _nodes
     ) external payable onlyAlice {
-        // If token gets transfered multiple times before policy is fulfilled,
+        // If token gets transferred multiple times before policy is fulfilled,
         // only actually create a policy for the last holder
 
         if (validPolicy[_policyId]) {
-            // Should potentially do some verification of _valueInWei here so we dont have to trust Alice totally
+            // Should potentially do some verification of _valueInWei here so we don't have to trust Alice totally
 
             policyManager.createPolicy{value: _valueInWei}(
                 _policyId,
@@ -130,7 +130,7 @@ contract OpenDRM721 is ERC721 {
             console.logBytes16(policyId);
             validPolicy[policyId] = true;
 
-            // Hardcoding policy details for now
+            // hard coding policy details for now
             abioticAlice.requestPolicy(tokenId.toString(), to, 2, 3, 3);
         }
     }
