@@ -19,7 +19,7 @@ contract OpenDRM721v2 is ERC721Upgradeable, OpenDRMConsumer {
 
     OpenDRMCoordinator private _openDrmCoordinator;
 
-    mapping(bytes16 => bool) isValidPolicy;
+    mapping(uint256 => bytes16) policies;
 
     uint16 constant _size = 3;
     uint16 constant _threshold = 2;
@@ -65,23 +65,13 @@ contract OpenDRM721v2 is ERC721Upgradeable, OpenDRMConsumer {
         uint256 tokenId
     ) internal override {
         console.log("_beforeTokenTransfer");
-        string memory label = getFullLabel(tokenId);
+        string memory labelSuffix = tokenId.toString();
 
         bytes16 policyId;
-        bytes memory aliceVerifyingKey = _aliceVerifyingKey();
 
         // Revoke old policy
         {
-            console.log("revoking old policy");
-            (bytes memory verifyingKey, ) = _openDrmCoordinator.checkRegistry(
-                from
-            );
-
-            policyId = label.toPolicyId(aliceVerifyingKey, verifyingKey);
-
-            revokePolicy(policyId);
-
-            isValidPolicy[policyId] = false;
+            revokePolicy(policies[tokenId]);
         }
         // Request new policy
         {
@@ -93,28 +83,20 @@ contract OpenDRM721v2 is ERC721Upgradeable, OpenDRMConsumer {
 
             // TODO: Handle if user not registered. Can probably skip policy and let them create one later?
 
-            policyId = label.toPolicyId(aliceVerifyingKey, verifyingKey);
-
-            isValidPolicy[policyId] = true;
             console.log("calling internal create policy");
-            createPolicy(
-                policyId,
+            policyId = createPolicy(
                 _size,
                 _threshold,
                 uint32(block.timestamp),
                 uint32(block.timestamp + _duration),
                 _openDrmCoordinator.subscriptionId(),
+                labelSuffix,
                 verifyingKey,
                 decryptingKey
             );
+            // Save new policy
+            policies[tokenId] = policyId;
         }
     }
 
-    function getFullLabel(uint256 tokenId)
-        public
-        view
-        returns (string memory label)
-    {
-        return tokenId.toString().toLabel(address(this));
-    }
 }

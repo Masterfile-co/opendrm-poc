@@ -361,6 +361,22 @@
     "@ethersproject/properties" "^5.5.0"
     "@ethersproject/strings" "^5.5.0"
 
+"@nucypher/nucypher-core@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@nucypher/nucypher-core/-/nucypher-core-0.1.0.tgz#6a71fc079999699a3f76b9841e509b47575924c4"
+  integrity sha512-mggUpq0xKaW/LXhNKvtOm6CC5aQcujwN1YJUbXz8DrCGMhldyFa8AHDYu835PeOJ8A7F5YmhyxVJAZByrgw+Xw==
+
+"@nucypher/nucypher-ts@0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@nucypher/nucypher-ts/-/nucypher-ts-0.7.0.tgz#b85f5c10c83b3fda5d48c815966e0f95bec6641c"
+  integrity sha512-uglSuneu+RnnngkgWF57C3KOdIxlSWgTRco+cui2sfnRrI4+9bPdEGXfXkc1YPX4CHJcDVJmksQa+n8Na4KN2g==
+  dependencies:
+    "@nucypher/nucypher-core" "^0.1.0"
+    axios "^0.21.1"
+    ethers "^5.4.1"
+    js-sha3 "^0.8.0"
+    qs "^6.10.1"
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -1372,18 +1388,6 @@ normalize-url@^4.1.0:
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.1.tgz#0dd90cf1288ee1d1313b87081c9a5932ee48518a"
   integrity sha512-9UZCFRHQdNrfTpGg8+1INIg93B6zE0aXMVFkw1WFwvO4SlZywU6aLg5Of0Ap/PgcbSw4LNxvMWXMeugwMCX0AA==
 
-nucypher-ts@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/nucypher-ts/-/nucypher-ts-0.5.0.tgz#633a25cdc6775e21355826600f43083627aa62dc"
-  integrity sha512-Tfi36ztaArIiPUHHqTdpLzVHuTeJyg9leEY59V2KSXEMwWVOFR7NFfUEswl2hGQYt/TikYZRisavu0/psr/6GQ==
-  dependencies:
-    axios "^0.21.1"
-    ethers "^5.4.1"
-    js-sha3 "^0.8.0"
-    qs "^6.10.1"
-    secure-random "^1.1.2"
-    umbral-pre "^0.3.2"
-
 object-assign@^4:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
@@ -1555,11 +1559,6 @@ scrypt-js@3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/scrypt-js/-/scrypt-js-3.0.1.tgz#d314a57c2aef69d1ad98a138a21fe9eafa9ee312"
   integrity sha512-cdwTTnqPu0Hyvf5in5asVdZocVDTNRmR7XEcJuIzMjJeSHybHl7vpB66AzwTaIg6CLSbtjcxc8fqcySfnTkccA==
-
-secure-random@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/secure-random/-/secure-random-1.1.2.tgz#ed103b460a851632d420d46448b2a900a41e7f7c"
-  integrity sha512-H2bdSKERKdBV1SwoqYm6C0y+9EA94v6SUBOWO8kDndc4NoUih7Dv6Tsgma7zO1lv27wIvjlD0ZpMQk7um5dheQ==
 
 semver-diff@^3.1.1:
   version "3.1.1"
@@ -1739,11 +1738,6 @@ typescript@^4.5.5:
   version "4.5.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.5.tgz#d8c953832d28924a9e3d37c73d729c846c5896f3"
   integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
-
-umbral-pre@^0.3.2:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/umbral-pre/-/umbral-pre-0.3.3.tgz#00d4115d5d21f939bcb750762d7f251974f8fa52"
-  integrity sha512-i/6SlfGuLGJW6V8xyx8Eto6Ka7QEmg02o/vkOMUtJWFlR5P4Wbsg623LAbjHcrogc1erwAxKZQCeejyFdKh1lQ==
 
 undefsafe@^2.0.5:
   version "2.0.5"

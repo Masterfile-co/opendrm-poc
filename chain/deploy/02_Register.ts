@@ -1,7 +1,5 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { bobSecretKey, nuBob, nuCharlie, NuConfig } from "../scripts/constants";
-import { AbioticAliceManager__factory } from "../types";
 
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts, ethers } = hre;

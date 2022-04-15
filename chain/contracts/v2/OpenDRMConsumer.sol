@@ -7,8 +7,11 @@ import {DKGSubscriptionManager} from "./DKGSubscriptionManager.sol";
 import {IPRESubscriptionManager} from "./IPRESubscriptionManager.sol";
 
 import "hardhat/console.sol";
+import {LibNuCypher} from "../LibNuCypher.sol";
 
 abstract contract OpenDRMConsumer is Initializable {
+    using LibNuCypher for string;
+
     DKGSubscriptionManager private _dkgManager;
     IPRESubscriptionManager private _preManager;
 
@@ -26,42 +29,39 @@ abstract contract OpenDRMConsumer is Initializable {
      * @dev to a central entity and is likely what we will do for the final OpenDRM tokenomics model.
      */
     function createPolicy(
-        bytes16 _policyId,
         uint16 _size,
         uint16 _threshold,
         uint32 _startTimestamp,
         uint32 _endTimestamp,
         // Policy Request Info
         uint256 _subscriptionId,
+        string memory _labelSuffix,
         bytes memory _verifyingKey,
         bytes memory _decryptingKey
-    ) internal {
-        console.log("policy cost");
+    ) internal returns (bytes16 policyId) {
+        // First request policy from Abiotic Alice
+        (policyId, ) = _dkgManager.requestPolicy(
+            _subscriptionId,
+            _labelSuffix,
+            _verifyingKey,
+            _decryptingKey,
+            _size,
+            _threshold,
+            _startTimestamp,
+            _endTimestamp
+        );
 
         uint256 policyCost = _preManager.getPolicyCost(
             _size,
             _startTimestamp,
             _endTimestamp
         );
-        console.log(policyCost);
 
+        // Then create a new PRE policy so Ursulas will provide service
         _preManager.createPolicy{value: policyCost}(
-            _policyId,
+            policyId,
             address(0),
             _size,
-            _startTimestamp,
-            _endTimestamp
-        );
-
-        console.log("requesting policy");
-        
-        _dkgManager.requestPolicy(
-            _subscriptionId,
-            _policyId,
-            _verifyingKey,
-            _decryptingKey,
-            _size,
-            _threshold,
             _startTimestamp,
             _endTimestamp
         );
@@ -70,16 +70,5 @@ abstract contract OpenDRMConsumer is Initializable {
     function revokePolicy(bytes16 _policyId) internal {
         // TODO: Once Implemented
         // _preManager.revokePolicy(_policyId);
-    }
-
-    /**
-     * @dev Making this dynamic in case the Abiotic Alice verifying key needs to change periodically
-     */
-    function _aliceVerifyingKey()
-        internal
-        view
-        returns (bytes memory verifyingKey)
-    {
-        return _dkgManager.verifyingKey();
     }
 }

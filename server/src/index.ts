@@ -2,109 +2,107 @@ import "dotenv/config";
 import express, { Request } from "express";
 import cors from "cors";
 import { Wallet, providers, utils } from "ethers";
-import { Alice, Bob, EnactedPolicy, PublicKey } from "nucypher-ts";
-import { AbioticAliceManager__factory } from "./types";
+import { DKGSubscriptionManager__factory } from "./types";
 import { TypedListener } from "./types/common";
-import { PolicyRequestedEvent } from "./types/AbioticAliceManager";
 import { fromHexString } from "./utils";
-import { HRAC } from "nucypher-ts/build/main/src/policies/hrac";
-import { hexlify, toUtf8Bytes, zeroPad } from "ethers/lib/utils";
-import { PreEnactedPolicy } from "nucypher-ts/build/main/src/policies/policy";
+
+import { hexlify } from "ethers/lib/utils";
+import { PolicyRequestedEvent } from "./types/DKGSubscriptionManager";
+import {
+  Alice,
+  BlockchainPolicyParameters,
+  PublicKey,
+  RemoteBob,
+  SecretKey,
+} from "@nucypher/nucypher-ts";
+import { HRAC } from "@nucypher/nucypher-core";
+import { PreEnactedPolicy } from "@nucypher/nucypher-ts/build/main/src/policies/policy";
 
 let enactedPolicies: { [policyId: string]: PreEnactedPolicy } = {};
 
 const NuConfig = {
-  porterUri: "https://porter-lynx.nucypher.community/",
+  porterUri: "https://porter-ibex.nucypher.community/",
 };
 
-console.log("NETWORK", process.env.NETWORK)
-console.log("GOERLI_URL", process.env.GOERLI_URL)
-console.log("ALICE_PRIVATE_KEY", process.env.ALICE_PRIVATE_KEY)
-console.log("ALICE_NU_SECRET_KEY", process.env.ALICE_NU_SECRET_KEY)
-console.log("ABIOTIC_ALICE_MANAGER_ADDRESS", process.env.ABIOTIC_ALICE_MANAGER_ADDRESS)
-
+console.log("NETWORK", process.env.NETWORK);
+console.log("MUMBAI_URL", process.env.MUMBAI_URL);
+console.log("ALICE_PRIVATE_KEY", process.env.ALICE_PRIVATE_KEY);
+console.log("ALICE_NU_SECRET_KEY", process.env.ALICE_NU_SECRET_KEY);
+console.log("DKG_MANAGER_ADDRESS", process.env.DKG_MANAGER_ADDRESS);
 
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 3001;
-const providerUrl =
-  process.env?.NETWORK == "goerli"
-    ? (process.env.GOERLI_URL as string)
-    : "http://0.0.0.0:8545/";
+// const providerUrl =
+//   process.env?.NETWORK == "mumbai"
+//     ? (process.env.MUMBAI_URL as string)
+//     : "http://0.0.0.0:8545/";
+const providerUrl = "http://0.0.0.0:8545/";
 const provider = new providers.JsonRpcProvider(providerUrl);
 const wallet = new Wallet(process.env.ALICE_PRIVATE_KEY as string, provider);
 
-const nuAlice = Alice.fromSecretKeyBytes(
+const nuAlice = Alice.fromSecretKey(
   NuConfig,
-  Buffer.from(process.env.ALICE_NU_SECRET_KEY as string),
+  SecretKey.fromBytes(Buffer.from(process.env.ALICE_NU_SECRET_KEY as string)),
   provider as providers.Web3Provider
 );
 
-const abioticAliceManager = AbioticAliceManager__factory.connect(
-  process.env.ABIOTIC_ALICE_MANAGER_ADDRESS as string,
+const dkgManager = DKGSubscriptionManager__factory.connect(
+  process.env.DKG_MANAGER_ADDRESS as string,
   wallet
 );
 
-const policyRequestFilter = abioticAliceManager.filters.PolicyRequested();
+const policyRequestFilter = dkgManager.filters.PolicyRequested();
 
 const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
-  requestor,
-  recipient,
+  subscriptionId,
+  consumer,
+  _verifyingKey,
+  _decryptingKey,
+  size,
   threshold,
-  shares,
-  paymentPeriods,
+  startTimestamp,
+  endTimestamp,
   label
 ) => {
-  const bobKeys = await abioticAliceManager.registry(recipient);
-
   const verifyingKey = PublicKey.fromBytes(
-    fromHexString(bobKeys.bobVerifyingKey.slice(2))
+    fromHexString(_verifyingKey.slice(2))
   );
   const decryptingKey = PublicKey.fromBytes(
-    fromHexString(bobKeys.bobDecryptingKey.slice(2))
+    fromHexString(_decryptingKey.slice(2))
   );
 
   console.log(
     `handling policy with label: ${label}, publisher verifying key: ${utils.hexlify(
       nuAlice.verifyingKey.toBytes()
-    )}, recipient verifying key: ${bobKeys.bobVerifyingKey}`
+    )}, recipient verifying key: ${_verifyingKey}`
   );
   console.log();
-
-  const policy = await nuAlice.generatePreEnactedPolicy({
-    label,
-    bob: {
-      verifyingKey,
-      decryptingKey,
-    },
-    threshold: threshold.toNumber(),
-    shares: shares.toNumber(),
-    paymentPeriods: paymentPeriods.toNumber(),
-  });
-  const policyId = utils.hexlify(policy.id.toBytes());
-
-  const _nodes = policy.ursulaAddresses;
   try {
-    const policytx = await abioticAliceManager.fulfillPolicy(
-      policy.id.toBytes(),
-      policy.expiration.getTime()/1000,
-      policy.value,
-      _nodes,
-      { gasLimit: 700_000 }
-    );
-    await policytx.wait();
+    const policyParams: BlockchainPolicyParameters = {
+      bob: RemoteBob.fromKeys(decryptingKey, verifyingKey),
+      label,
+      threshold,
+      shares: size,
+      startDate: new Date(startTimestamp * 1000),
+      endDate: new Date(endTimestamp * 1000),
+    };
+
+    const policy = await nuAlice.generatePreEnactedPolicy(policyParams);
+
+    const policyId = utils.hexlify(policy.id.toBytes());
 
     enactedPolicies[policyId] = policy;
 
     console.log(
-      `Fulfilled ${policyId} for ${recipient} requested by ${requestor}`
+      `Fulfilled ${policyId} for ${_verifyingKey} requested by ${consumer} on subscription ${subscriptionId}`
     );
   } catch (err) {
     console.log("Error fulfilling policy", err);
   }
 };
 
-abioticAliceManager.on(policyRequestFilter, handlePolicyRequested);
+dkgManager.on(policyRequestFilter, handlePolicyRequested);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -123,13 +121,9 @@ app.get("/policy", async (req: Request<any, any, any, PolicyQuery>, res) => {
     const policy: any = {
       id: hexlify(_policy.id.toBytes()),
       label: _policy.label,
-      encryptedTreasureMap: {
-        capsule: hexlify(_policy.encryptedTreasureMap.capsule.toBytes()),
-        cyphertext: hexlify(_policy.encryptedTreasureMap.ciphertext),
-      },
+      encryptedTreasureMap: hexlify(_policy.encryptedTreasureMap.toBytes()),
       policyKey: hexlify(_policy.policyKey.toBytes()),
       aliceVerifyingKey: hexlify(_policy.aliceVerifyingKey),
-      ursulas: _policy.ursulaAddresses,
     };
     res.status(200).json(policy);
   } else {
@@ -147,8 +141,7 @@ app.get("/treasureMap", (req: Request<TreasureMapParams>, res) => {
 
   if (policy) {
     res.send({
-      capsule: hexlify(policy.encryptedTreasureMap.capsule.toBytes()),
-      cyphertext: hexlify(policy.encryptedTreasureMap.ciphertext),
+      map: hexlify(policy.encryptedTreasureMap.toBytes()),
     });
   } else {
     res.status(404).send("No enacted policy");
@@ -170,11 +163,12 @@ app.get("/policyId", (req, res) => {
   let label = req.query.label as string;
   let bobVerifyingKey = req.query.verifyingKey as string;
 
-  let policyId = HRAC.derive(
-    nuAlice.verifyingKey.toBytes(),
-    fromHexString(bobVerifyingKey.slice(2)),
-    label
+  let policyId = new HRAC(
+    nuAlice.verifyingKey,
+    PublicKey.fromBytes(fromHexString(bobVerifyingKey.slice(2))),
+    Buffer.from(label)
   ).toBytes();
+
   res.send({ policyId: utils.hexlify(policyId) });
 });
 

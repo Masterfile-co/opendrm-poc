@@ -3,7 +3,11 @@ pragma solidity 0.8.13;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
+import {LibNuCypher} from "../LibNuCypher.sol";
+
 contract DKGSubscriptionManager is Ownable {
+    using LibNuCypher for string;
+
     // ERRORS
     error NotSubscriptionOwner(uint256 subscriptionId, address caller);
     error NotSubscriptionConsumer(uint256 subscriptionId, address caller);
@@ -23,14 +27,14 @@ contract DKGSubscriptionManager is Ownable {
     );
     event PolicyRequested(
         uint256 indexed subscriptionId,
-        bytes16 indexed policyId,
         address indexed consumer,
         bytes verifyingKey,
         bytes decryptingKey,
         uint16 _size,
         uint16 _threshold,
         uint32 _startTimestamp,
-        uint32 _endTimestamp
+        uint32 _endTimestamp,
+        string label
     );
 
     // TODO: Pack Struct
@@ -141,7 +145,7 @@ contract DKGSubscriptionManager is Ownable {
      */
     function requestPolicy(
         uint256 _subscriptionId,
-        bytes16 _policyId,
+        string memory _labelSuffix,
         // TODO: Check the size of these keys
         bytes calldata _verifyingKey,
         bytes calldata _decryptingKey,
@@ -149,21 +153,34 @@ contract DKGSubscriptionManager is Ownable {
         uint16 _threshold,
         uint32 _startTimestamp,
         uint32 _endTimestamp
-    ) external onlyConsumer(_subscriptionId) {
+    )
+        external
+        onlyConsumer(_subscriptionId)
+        returns (bytes16 policyId, string memory label)
+    {
         if (subscriptions[_subscriptionId].endTimestamp < block.timestamp) {
             revert SubscriptionExpired(_subscriptionId);
         }
 
+        // Requestor provides a uuid for their label. We append it to the  
+        // requesting address so we dont get conflicting labels
+        label = _labelSuffix.toLabel(msg.sender);
+        
+        // Derive the policy id by hashing label, alice verifying key, and bob verifying key
+        // This doesn't technically need to be on chain but is a big convience since
+        // the user will most likely directly call the PRE createPolicy method after this.
+        policyId = label.toPolicyId(verifyingKey, _verifyingKey);
+
         emit PolicyRequested(
             _subscriptionId,
-            _policyId,
             msg.sender,
             _verifyingKey,
             _decryptingKey,
             _size,
             _threshold,
             _startTimestamp,
-            _endTimestamp
+            _endTimestamp,
+            label
         );
     }
 
