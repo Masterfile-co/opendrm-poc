@@ -1,10 +1,8 @@
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { hexlify, toUtf8Bytes, zeroPad } from "ethers/lib/utils";
-import { useEagerConnect } from "hooks/connect/useEagerConnect";
-import { useNetworkConnect } from "hooks/connect/useNetworkConnect";
 import { useRouter } from "next/router";
-import { Bob } from "nucypher-ts";
+import { Bob } from "@nucypher/nucypher-ts";
 import {
   Metadata,
   OpenDRMContext,
@@ -44,62 +42,54 @@ export function useOpenDRMContextManager(): OpenDRMContext {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { steps, metadata, loading } = state;
   const { push } = useRouter();
-  const { active, library, account } = useWeb3React<Web3Provider>();
+  const { account } = useWeb3React();
   // user eager connect
-  const { tried } = useEagerConnect();
-  // connect to network provider
-  useNetworkConnect();
 
-  useEffect(() => {
-    if (tried) {
-      init();
-    }
-  }, [tried]);
 
   const setLoading = useCallback((loading: boolean) => {
     dispatch({ type: ActionType.UPDATE, payload: { loading } });
   }, []);
 
-  const init = useCallback(async () => {
+  // const init = useCallback(async () => {
     
-    if (!active || !library || !account) {
-      push("/");
-      setLoading(false);
-      return;
-    }
-    // Active so past step1
-    setStepDone(0);
+  //   if ( !account) {
+  //     push("/");
+  //     setLoading(false);
+  //     return;
+  //   }
+  //   // Active so past step1
+  //   setStepDone(0);
 
-    // Check if valid registration
-    const secretKey = localStorage.getItem("nu_sk");
+  //   // Check if valid registration
+  //   const secretKey = localStorage.getItem("nu_sk");
 
-    if (!secretKey) {
-      // push("/step2");
-      setLoading(false);
-      return;
-    }
-    const bob = Bob.fromSecretKey(
-      NuConfig,
-      zeroPad(toUtf8Bytes(secretKey), 32)
-    );
-    const aliceManager = AbioticAliceManager__factory.connect(
-      ABIOTICALICE_ADDRESS,
-      library.getSigner()
-    );
+  //   if (!secretKey) {
+  //     // push("/step2");
+  //     setLoading(false);
+  //     return;
+  //   }
+  //   const bob = Bob.fromSecretKey(
+  //     NuConfig,
+  //     zeroPad(toUtf8Bytes(secretKey), 32)
+  //   );
+  //   const aliceManager = AbioticAliceManager__factory.connect(
+  //     ABIOTICALICE_ADDRESS,
+  //     library.getSigner()
+  //   );
 
-    const registeredKey = await aliceManager.registry(account);
+  //   const registeredKey = await aliceManager.registry(account);
 
-    if (registeredKey.bobVerifyingKey === hexlify(bob.verifyingKey.toBytes())) {
-      setNuUser(bob);
-      setStepDone(1);
-      // push("/step3");
-      setLoading(false);
-    } else {
-      localStorage.removeItem("nu_sk");
-      // push("/step2");
-      setLoading(false);
-    }
-  }, [active, steps]);
+  //   if (registeredKey.bobVerifyingKey === hexlify(bob.verifyingKey.toBytes())) {
+  //     setNuUser(bob);
+  //     setStepDone(1);
+  //     // push("/step3");
+  //     setLoading(false);
+  //   } else {
+  //     localStorage.removeItem("nu_sk");
+  //     // push("/step2");
+  //     setLoading(false);
+  //   }
+  // }, [active, steps]);
 
   const setMetadata = useCallback((metadata: Metadata) => {
     dispatch({ type: ActionType.UPDATE, payload: { metadata } });

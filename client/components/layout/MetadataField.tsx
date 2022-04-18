@@ -1,15 +1,12 @@
 import { hexlify } from "ethers/lib/utils";
-import { useOpenDRM } from "hooks/provider/useOpenDRM";
+
 import { Metadata } from "providers/OpenDRMContextProvider";
+import { useAppState } from "providers/OpenDRMProvider";
 import React from "react";
 import { middleEllipsis } from "utils";
 
-// export interface MetadataField {
-//   metadata: Metadata | undefined;
-// }
-
 export default function MetadataField() {
-  const { metadata } = useOpenDRM();
+  const { metadata } = useAppState();
 
   return (
     <div className=" mb-0 p-[15px] w-full">
@@ -23,7 +20,7 @@ export default function MetadataField() {
               {
                 title: metadata.title,
                 description: metadata.description,
-                image: middleEllipsis(hexlify(metadata.msgKit.ciphertext)),
+                // image: middleEllipsis(hexlify(metadata.msgKit.ciphertext)),
                 capsule: middleEllipsis(hexlify(metadata.msgKit.capsule.toBytes())),
               },
               null,

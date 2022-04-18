@@ -3,19 +3,24 @@ import "../styles/globals.css";
 import { AppContext, AppInitialProps, AppLayoutProps } from "next/app";
 import type { NextComponentType } from "next";
 import Layout from "../components/layout/Layout";
-import OpenDRMProvider from "../providers/OpenDRMProvider";
 
+import Web3Provider from "../providers/Web3Provider";
+import { OpenDRMProvider } from "providers/OpenDRMProvider";
+import OpenDRMManager from "providers/OpenDRMManager";
 
 const MyApp: NextComponentType<AppContext, AppInitialProps, AppLayoutProps> = ({
   Component,
   pageProps,
 }: AppLayoutProps) => {
   return (
-    <OpenDRMProvider>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </OpenDRMProvider>
+    <Web3Provider>
+      <OpenDRMProvider>
+        <OpenDRMManager />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </OpenDRMProvider>
+    </Web3Provider>
   );
 };
 

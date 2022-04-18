@@ -13,6 +13,34 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "ERC721Upgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC721Upgradeable__factory>;
+    getContractFactory(
+      name: "IERC721MetadataUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721MetadataUpgradeable__factory>;
+    getContractFactory(
+      name: "IERC721ReceiverUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721ReceiverUpgradeable__factory>;
+    getContractFactory(
+      name: "IERC721Upgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721Upgradeable__factory>;
+    getContractFactory(
+      name: "ERC165Upgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC165Upgradeable__factory>;
+    getContractFactory(
+      name: "IERC165Upgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC165Upgradeable__factory>;
+    getContractFactory(
+      name: "Ownable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Ownable__factory>;
+    getContractFactory(
       name: "ERC721",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC721__factory>;
@@ -48,7 +76,58 @@ declare module "hardhat/types/runtime" {
       name: "OpenDRM721",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.OpenDRM721__factory>;
+    getContractFactory(
+      name: "DKGSubscriptionManager",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.DKGSubscriptionManager__factory>;
+    getContractFactory(
+      name: "IPRESubscriptionManager",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IPRESubscriptionManager__factory>;
+    getContractFactory(
+      name: "OpenDRM721v2",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.OpenDRM721v2__factory>;
+    getContractFactory(
+      name: "OpenDRMCoordinator",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.OpenDRMCoordinator__factory>;
 
+    getContractAt(
+      name: "ERC721Upgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC721Upgradeable>;
+    getContractAt(
+      name: "IERC721MetadataUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721MetadataUpgradeable>;
+    getContractAt(
+      name: "IERC721ReceiverUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721ReceiverUpgradeable>;
+    getContractAt(
+      name: "IERC721Upgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721Upgradeable>;
+    getContractAt(
+      name: "ERC165Upgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC165Upgradeable>;
+    getContractAt(
+      name: "IERC165Upgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC165Upgradeable>;
+    getContractAt(
+      name: "Ownable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Ownable>;
     getContractAt(
       name: "ERC721",
       address: string,
@@ -94,6 +173,26 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.OpenDRM721>;
+    getContractAt(
+      name: "DKGSubscriptionManager",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.DKGSubscriptionManager>;
+    getContractAt(
+      name: "IPRESubscriptionManager",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IPRESubscriptionManager>;
+    getContractAt(
+      name: "OpenDRM721v2",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.OpenDRM721v2>;
+    getContractAt(
+      name: "OpenDRMCoordinator",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.OpenDRMCoordinator>;
 
     // default types
     getContractFactory(

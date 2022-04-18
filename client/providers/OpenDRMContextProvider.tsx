@@ -1,5 +1,5 @@
 import { useOpenDRMContextManager } from "hooks/provider/useOpenDRMContextManager";
-import { Bob, MessageKit } from "nucypher-ts";
+import { Bob, MessageKit } from "@nucypher/nucypher-ts";
 import React, { createContext } from "react";
 
 export function OpenDRMContextProvider({ children }: { children: any }) {

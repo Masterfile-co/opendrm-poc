@@ -1,4 +1,4 @@
-const withTM = require("next-transpile-modules")(["nucypher-ts"]);
+const withTM = require("next-transpile-modules")(["@nucypher/nucypher-ts"]);
 
 
 /** @type {import('next').NextConfig} */
