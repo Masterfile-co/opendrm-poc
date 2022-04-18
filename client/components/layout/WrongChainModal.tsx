@@ -6,18 +6,18 @@ import { useConnect } from "hooks/useConnect";
 import { PrimaryButton } from "components/Button";
 
 export default function WrongChainModal() {
-  const { chainId } = useWeb3React();
+  const { chainId, account } = useWeb3React();
   const { connectMetamask } = useConnect();
 
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (chainId && chainId !== 80001) {
+    if ((chainId && chainId !== 80001) || (account && !chainId)) {
       setOpen(true);
     } else {
       setOpen(false);
     }
-  }, [chainId]);
+  }, [chainId, account]);
 
   return (
     <Transition.Root show={open} as={Fragment}>

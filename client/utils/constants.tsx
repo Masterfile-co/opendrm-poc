@@ -4,6 +4,9 @@ export const NuConfig = {
   porterUri: "https://porter-lynx.nucypher.community/",
 };
 
+export const OPENDRM_COORDINATOR = process.env
+  .NEXT_PUBLIC_OPENDRM_COORDINATOR_ADDRESS as string;
+
 export const OPENDRM721_ADDRESS = process.env
   .NEXT_PUBLIC_OPENDRM721_ADDRESS as string;
 
@@ -19,6 +22,6 @@ export const mumbai: AddEthereumChainParameter = {
   chainId: 80001,
   chainName: "Mumbai",
   nativeCurrency: { name: "Matic", symbol: "MATIC", decimals: 18 },
-  rpcUrls: ["https://matic-mumbai.chainstacklabs.com"],
+  rpcUrls: ["https://rpc-mumbai.matic.today"],
   blockExplorerUrls: ["https://mumbai.polygonscan.com"],
 };

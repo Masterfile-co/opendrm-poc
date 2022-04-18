@@ -1,8 +1,20 @@
+import { useWeb3React } from "@web3-react/core";
 import { PrimaryButton } from "components/Button";
 import TextInputField from "components/TextInputField";
-import React from "react";
+import { useOpenDRM } from "hooks/useOpenDRM";
+import React, { useState } from "react";
 
-export default function EnterSecretKey() {
+export interface EnterSecretKeyProps {
+  done: boolean;
+  register: (secret: string) => void;
+}
+
+export default function EnterSecretKey({
+  register,
+  done,
+}: EnterSecretKeyProps) {
+  const [tempSecret, setTempSecret] = useState("");
+
   return (
     <>
       <span className="text-3xl text-center font-semibold">
@@ -13,10 +25,8 @@ export default function EnterSecretKey() {
           id="nu-pw"
           type="password"
           placeholder="Enter a password"
-          value=""
-          onChange={() => {}}
-          //   value={secretKey}
-          //   onChange={setSecretKey}
+          value={tempSecret}
+          onChange={setTempSecret}
         />
         <p className="mt-2 text-sm text-[#CF5163] font-secondary">
           This password is not stored securely. Do not use a real password.
@@ -24,10 +34,10 @@ export default function EnterSecretKey() {
       </div>
       <PrimaryButton
         className="w-[215px]"
-        // disabled={!secretKey || done}
-        // onClick={() => {
-        //   registerUser();
-        // }}
+        disabled={done || !tempSecret}
+        onClick={() => {
+          register(tempSecret);
+        }}
       >
         Register
       </PrimaryButton>

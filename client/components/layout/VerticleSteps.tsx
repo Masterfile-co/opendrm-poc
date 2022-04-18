@@ -5,6 +5,7 @@ import { useAppState } from "providers/OpenDRMProvider";
 
 export default function VerticleSteps() {
   const { steps } = useAppState();
+  
   return (
     <nav className="h-full flex items-center">
       <ol role="list">

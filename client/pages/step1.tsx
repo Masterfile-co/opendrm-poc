@@ -11,13 +11,8 @@ import { mumbai } from "utils/constants";
 
 const Step1: NextLayoutComponentType = () => {
   const { steps } = useAppState();
-  const { setStepActive } = useOpenDRM();
   const { connectMetamask } = useConnect();
   const { push } = useRouter();
-
-  useEffect(() => {
-    setStepActive(0);
-  }, []);
 
   return (
     <div className="flex flex-col min-h-screen justify-center items-center w-full h-full space-y-10 px-5 pb-5">

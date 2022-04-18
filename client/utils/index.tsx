@@ -1,4 +1,5 @@
-import sha3 from "js-sha3";
+import { SecretKey } from "@nucypher/nucypher-ts";
+import { toUtf8Bytes, zeroPad } from "ethers/lib/utils";
 
 export const middleEllipsis = (str: string) => {
   if (str.length > 35) {
@@ -14,3 +15,7 @@ export const fromHexString = (hexString: string): Uint8Array => {
 
 export const fromBytes = (bytes: Uint8Array): string =>
   new TextDecoder().decode(bytes);
+
+export const toSecretKey = (secret: string): SecretKey => {
+  return SecretKey.fromBytes(zeroPad(toUtf8Bytes(secret), 32));
+};
