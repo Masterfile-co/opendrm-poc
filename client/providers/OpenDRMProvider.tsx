@@ -1,11 +1,13 @@
 import { createContext, Dispatch, useContext, useReducer } from "react";
-import { Metadata, Step } from "utils/types";
+import { EnactedPolicy, Metadata, Step } from "utils/types";
 
 export interface AppState {
   secret?: string;
   metadata?: Metadata;
+  policy?: EnactedPolicy;
   loading: boolean;
   steps: Step[];
+  tokenId: number;
 }
 
 const initialSteps: Step[] = [
@@ -21,15 +23,39 @@ const initialSteps: Step[] = [
     done: false,
     active: false,
   },
+  {
+    label: "3",
+    title: "Encrypt and Mint",
+    done: false,
+    active: false,
+  },
+  {
+    label: "4",
+    title: "Decrypt NFT",
+    done: false,
+    active: false,
+  },
+  {
+    label: "5",
+    title: "Transfer NFT",
+    done: false,
+    active: false,
+  },
 ];
 
 export const AppInitialState: AppState = {
   loading: true,
   steps: [...initialSteps],
+  tokenId: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
 };
 
 interface AppActions {
-  type: "SET_STEP_DONE" | "RESET_STEPS" | "SET_SECRET";
+  type:
+    | "SET_STEP_DONE"
+    | "RESET_STEPS"
+    | "SET_SECRET"
+    | "SET_METADATA"
+    | "SET_POLICY";
   payload: any;
 }
 
@@ -65,6 +91,16 @@ export const OpenDRMReducer = (
       return {
         ...state,
         secret: payload.secret,
+      };
+    case "SET_METADATA":
+      return {
+        ...state,
+        metadata: payload.metadata,
+      };
+    case "SET_POLICY":
+      return {
+        ...state,
+        policy: payload.policy,
       };
     default:
       return state;

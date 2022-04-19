@@ -8,9 +8,7 @@ import {
   OpenDRMContext,
   OpenDRMManagerState,
 } from "providers/OpenDRMContextProvider";
-import { useCallback, useEffect, useReducer } from "react";
-import { AbioticAliceManager__factory } from "types";
-import { ABIOTICALICE_ADDRESS, NuConfig } from "utils/constants";
+import { useCallback, useReducer } from "react";
 
 enum ActionType {
   UPDATE,

@@ -1,16 +1,9 @@
-import { Web3Provider } from "@ethersproject/providers";
-import { Bob, defaultConfiguration } from "@nucypher/nucypher-ts";
-import { ChainId } from "@nucypher/nucypher-ts/build/main/src/types";
-import { useWeb3React } from "@web3-react/core";
 import { AppDispatchContext } from "providers/OpenDRMProvider";
 import { useContext } from "react";
-import { OpenDRMCoordinator__factory } from "types";
-import { toSecretKey } from "utils";
-import { OPENDRM_COORDINATOR } from "utils/constants";
+import { EnactedPolicy, Metadata } from "utils/types";
 
 export function useOpenDRM() {
   const dispatch = useContext(AppDispatchContext);
-
 
   const setStepDone = (step: number) => {
     dispatch({ type: "SET_STEP_DONE", payload: { step } });
@@ -25,6 +18,13 @@ export function useOpenDRM() {
     dispatch({ type: "SET_SECRET", payload: { secret } });
   };
 
+  const setMetadata = (metadata: Metadata) => {
+    dispatch({ type: "SET_METADATA", payload: { metadata } });
+  };
 
-  return { setStepDone, resetSteps, setSecret };
+  const setPolicy = (policy: EnactedPolicy) => {
+    dispatch({ type: "SET_POLICY", payload: { policy } });
+  };
+
+  return { setStepDone, resetSteps, setSecret, setMetadata, setPolicy };
 }

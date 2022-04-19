@@ -9,13 +9,13 @@ import EnterSecretKey from "components/step2/EnterSecretKey";
 import { useWeb3React } from "@web3-react/core";
 import { Bob, defaultConfiguration } from "@nucypher/nucypher-ts";
 import { ChainId } from "@nucypher/nucypher-ts/build/main/src/types";
-import { toSecretKey } from "utils";
+import { bobFromSecret, toSecretKey } from "utils";
 import { OpenDRMCoordinator__factory } from "types";
-import { OPENDRM_COORDINATOR } from "utils/constants";
 import { Web3Provider } from "@ethersproject/providers";
 import Step2Loading from "components/step2/Step2Loading";
 import { useRouter } from "next/router";
 import { useAppState } from "providers/OpenDRMProvider";
+import { coordinatorAddress } from "utils/config";
 
 const Step2: NextLayoutComponentType = () => {
   const [loading, setLoading] = useState(false);
@@ -36,13 +36,10 @@ const Step2: NextLayoutComponentType = () => {
       return;
     }
 
-    const bob = Bob.fromSecretKey(
-      defaultConfiguration(ChainId.MUMBAI),
-      toSecretKey(secret)
-    );
+    const bob = bobFromSecret(secret);
 
     const coordinator = OpenDRMCoordinator__factory.connect(
-      OPENDRM_COORDINATOR,
+      coordinatorAddress,
       (provider as Web3Provider).getSigner()
     );
 

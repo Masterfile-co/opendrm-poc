@@ -1,3 +1,4 @@
+import { EncryptedTreasureMap, PublicKey } from "@nucypher/nucypher-core";
 import { MessageKit } from "@nucypher/nucypher-ts";
 
 export interface Metadata {
@@ -14,3 +15,8 @@ export interface Step {
 }
 
 
+export interface EnactedPolicy {
+  policyEncryptingKey: PublicKey;
+  publisherVerifyingKey: PublicKey;
+  encryptedTreasureMap: EncryptedTreasureMap;
+}

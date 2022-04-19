@@ -24,6 +24,7 @@ export default function OpenDRMManager() {
     const secret = localStorage.getItem("nu_sk");
 
     if (secret) {
+      //TODO: check secret against registry
       setSecret(secret);
     }
   }, []);

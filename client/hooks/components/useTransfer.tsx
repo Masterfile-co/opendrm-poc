@@ -1,6 +1,7 @@
 import { Web3Provider } from "@ethersproject/providers";
 import { useState } from "react";
 import { OpenDRM721__factory } from "types";
+import { bobAddress } from "utils/config";
 import { OPENDRM721_ADDRESS } from "utils/constants";
 
 export interface TransferHook {
@@ -27,16 +28,12 @@ export function useTransfer(props: TransferHook) {
       library.getSigner()
     );
 
-    const tx = await openDRM721.transferFrom(
-      account,
-      process.env.NEXT_PUBLIC_BOB_ADDRESS as string,
-      tokenId
-    );
+    const tx = await openDRM721.transferFrom(account, bobAddress, tokenId);
     await tx.wait();
 
     setLoading(false);
     setLocalStepDone(0);
   };
 
-  return {loading, transferToken}
+  return { loading, transferToken };
 }

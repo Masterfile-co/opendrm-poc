@@ -1,5 +1,5 @@
 import { metamask } from "utils/connectors";
-import { mumbai } from "utils/constants";
+import { mumbai } from "utils/config";
 
 export function useConnect() {
   const connectMetamask = () => {
