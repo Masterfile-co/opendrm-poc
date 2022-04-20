@@ -67,7 +67,7 @@ job "opendrm-server" {
 
       template {
         data = <<EOH
-		{{ with secret "kv/masterfile/dev/auth" }}
+		{{ with secret "kv/masterfile/dev/opendrm-server" }}
 			ALICE_NU_SECRET_KEY 	= "{{ .Data.data.ALICE_NU_SECRET_KEY }}"
 			ALICE_PRIVATE_KEY 		= "{{ .Data.data.ALICE_PRIVATE_KEY }}"
 			DKG_MANAGER_ADDRESS 	= "{{ .Data.data.DKG_MANAGER_ADDRESS }}"
