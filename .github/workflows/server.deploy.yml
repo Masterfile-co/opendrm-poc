@@ -1,0 +1,32 @@
+name: 'Build and Deploy Server'
+on:
+  push:
+    paths:
+      - "server/**"
+      - ".github/**"
+    # branches:
+    #   - develop
+
+jobs:
+  BUILD_SERVER:
+    runs-on: ["self-hosted", "X64", "Linux"]
+    steps:
+      - name: own
+        run: 
+          sudo chown -R $USER:$USER /home/ubuntu/actions-runner/_work/opendrm-poc
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: build
+        run: |
+          make server/build
+          make server/push
+          make server/clean
+  # DEPLOY_AUTH:
+  #   runs-on: ["self-hosted", "X64", "Linux"]
+  #   needs: BUILD_SERVER
+  #   steps:
+  #     - name: checkout
+  #       uses: actions/checkout@v2
+  #     - name: deploy
+  #       run: |
+  #         make server/deploy TAG=$(git rev-parse HEAD) ADDRESS=http://nomad.masterfiledev.service

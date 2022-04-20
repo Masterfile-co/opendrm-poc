@@ -29,3 +29,9 @@ run:
 
 push: ## Push production image of service to respository
 	@docker push 634967882344.dkr.ecr.us-west-2.amazonaws.com/dev:opendrm-server-$(GIT_SHA)
+
+clean: ## Clean up docker build
+	@docker rmi 634967882344.dkr.ecr.us-west-2.amazonaws.com/dev:opendrm-server-$(GIT_SHA)
+
+deploy: ## Deploy image to dev environment
+	@NOMAD_VAR_DOMAIN=masterfiledev.co NOMAD_VAR_IMAGETAG=$(TAG) nomad job run -address $(ADDRESS) -verbose -detach server.nomad
