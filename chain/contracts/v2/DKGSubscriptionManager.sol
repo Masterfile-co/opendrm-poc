@@ -5,6 +5,16 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 import {LibNuCypher} from "../LibNuCypher.sol";
 
+struct PolicyRequest {
+    uint16 size;
+    uint16 threshold;
+    // TODO: Keys are 33 bytes. Easier to handle as strings
+    string verifyingKey;
+    string decryptingKey;
+    uint32 startTimestamp;
+    uint32 endTimestamp;
+}
+
 contract DKGSubscriptionManager is Ownable {
     using LibNuCypher for string;
 
@@ -28,13 +38,9 @@ contract DKGSubscriptionManager is Ownable {
     event PolicyRequested(
         uint256 indexed subscriptionId,
         address indexed consumer,
-        bytes verifyingKey,
-        bytes decryptingKey,
-        uint16 _size,
-        uint16 _threshold,
-        uint32 _startTimestamp,
-        uint32 _endTimestamp,
-        string label
+        bytes16 indexed policyId,
+        string label,
+        PolicyRequest policyRequest
     );
 
     // TODO: Pack Struct
@@ -47,16 +53,7 @@ contract DKGSubscriptionManager is Ownable {
         uint16 numConsumers;
     }
 
-    struct PolicyRequest {
-        bytes16 policyId;
-        // TODO: Check the size of these keys
-        bytes verifyingKey;
-        bytes decryptingKey;
-        uint32 startTimestamp;
-        uint32 endTimestamp;
-    }
-
-    bytes public verifyingKey;
+    string public verifyingKey;
     // Per-second, per-node service fee rate
     uint256 public feeRate;
     uint256 internal subscriptionNonce;
@@ -78,7 +75,7 @@ contract DKGSubscriptionManager is Ownable {
         _;
     }
 
-    constructor(bytes memory _verifyingKey, uint256 _feeRate) {
+    constructor(string memory _verifyingKey, uint256 _feeRate) {
         verifyingKey = _verifyingKey;
         feeRate = _feeRate;
     }
@@ -147,12 +144,7 @@ contract DKGSubscriptionManager is Ownable {
         uint256 _subscriptionId,
         string memory _labelSuffix,
         // TODO: Check the size of these keys
-        bytes calldata _verifyingKey,
-        bytes calldata _decryptingKey,
-        uint16 _size,
-        uint16 _threshold,
-        uint32 _startTimestamp,
-        uint32 _endTimestamp
+        PolicyRequest memory _policyRequest
     )
         external
         onlyConsumer(_subscriptionId)
@@ -162,25 +154,21 @@ contract DKGSubscriptionManager is Ownable {
             revert SubscriptionExpired(_subscriptionId);
         }
 
-        // Requestor provides a uuid for their label. We append it to the  
+        // Requestor provides a uuid for their label. We append it to the
         // requesting address so we dont get conflicting labels
         label = _labelSuffix.toLabel(msg.sender);
-        
+
         // Derive the policy id by hashing label, alice verifying key, and bob verifying key
         // This doesn't technically need to be on chain but is a big convience since
         // the user will most likely directly call the PRE createPolicy method after this.
-        policyId = label.toPolicyId(verifyingKey, _verifyingKey);
+        policyId = label.toPolicyId(verifyingKey, _policyRequest.verifyingKey);
 
         emit PolicyRequested(
             _subscriptionId,
             msg.sender,
-            _verifyingKey,
-            _decryptingKey,
-            _size,
-            _threshold,
-            _startTimestamp,
-            _endTimestamp,
-            label
+            policyId,
+            label,
+            _policyRequest
         );
     }
 

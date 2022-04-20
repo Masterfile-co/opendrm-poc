@@ -4,8 +4,8 @@ pragma solidity 0.8.13;
 library LibNuCypher {
     function toPolicyId(
         string memory label,
-        bytes memory aliceVerifyingKey,
-        bytes memory bobVerifyingKey
+        string memory aliceVerifyingKey,
+        string memory bobVerifyingKey
     ) internal pure returns (bytes16 policyId) {
         return
             bytes16(

@@ -18,6 +18,31 @@ import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
+export type PolicyRequestStruct = {
+  size: BigNumberish;
+  threshold: BigNumberish;
+  verifyingKey: string;
+  decryptingKey: string;
+  startTimestamp: BigNumberish;
+  endTimestamp: BigNumberish;
+};
+
+export type PolicyRequestStructOutput = [
+  number,
+  number,
+  string,
+  string,
+  number,
+  number
+] & {
+  size: number;
+  threshold: number;
+  verifyingKey: string;
+  decryptingKey: string;
+  startTimestamp: number;
+  endTimestamp: number;
+};
+
 export interface DKGSubscriptionManagerInterface extends utils.Interface {
   functions: {
     "addConsumer(uint256,address)": FunctionFragment;
@@ -26,7 +51,7 @@ export interface DKGSubscriptionManagerInterface extends utils.Interface {
     "feeRate()": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "requestPolicy(uint256,string,bytes,bytes,uint16,uint16,uint32,uint32)": FunctionFragment;
+    "requestPolicy(uint256,string,(uint16,uint16,string,string,uint32,uint32))": FunctionFragment;
     "subscriptions(uint256)": FunctionFragment;
     "sweep(address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
@@ -53,16 +78,7 @@ export interface DKGSubscriptionManagerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "requestPolicy",
-    values: [
-      BigNumberish,
-      string,
-      BytesLike,
-      BytesLike,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish
-    ]
+    values: [BigNumberish, string, PolicyRequestStruct]
   ): string;
   encodeFunctionData(
     functionFragment: "subscriptions",
@@ -114,7 +130,7 @@ export interface DKGSubscriptionManagerInterface extends utils.Interface {
   events: {
     "ConsumerAdded(uint256,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
-    "PolicyRequested(uint256,address,bytes,bytes,uint16,uint16,uint32,uint32,string)": EventFragment;
+    "PolicyRequested(uint256,address,bytes16,string,tuple)": EventFragment;
     "SubscriptionCreated(uint256,address,uint16,uint32)": EventFragment;
   };
 
@@ -140,17 +156,13 @@ export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
 export type PolicyRequestedEvent = TypedEvent<
-  [BigNumber, string, string, string, number, number, number, number, string],
+  [BigNumber, string, string, string, PolicyRequestStructOutput],
   {
     subscriptionId: BigNumber;
     consumer: string;
-    verifyingKey: string;
-    decryptingKey: string;
-    _size: number;
-    _threshold: number;
-    _startTimestamp: number;
-    _endTimestamp: number;
+    policyId: string;
     label: string;
+    policyRequest: PolicyRequestStructOutput;
   }
 >;
 
@@ -225,12 +237,7 @@ export interface DKGSubscriptionManager extends BaseContract {
     requestPolicy(
       _subscriptionId: BigNumberish,
       _labelSuffix: string,
-      _verifyingKey: BytesLike,
-      _decryptingKey: BytesLike,
-      _size: BigNumberish,
-      _threshold: BigNumberish,
-      _startTimestamp: BigNumberish,
-      _endTimestamp: BigNumberish,
+      _policyRequest: PolicyRequestStruct,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -288,12 +295,7 @@ export interface DKGSubscriptionManager extends BaseContract {
   requestPolicy(
     _subscriptionId: BigNumberish,
     _labelSuffix: string,
-    _verifyingKey: BytesLike,
-    _decryptingKey: BytesLike,
-    _size: BigNumberish,
-    _threshold: BigNumberish,
-    _startTimestamp: BigNumberish,
-    _endTimestamp: BigNumberish,
+    _policyRequest: PolicyRequestStruct,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -349,12 +351,7 @@ export interface DKGSubscriptionManager extends BaseContract {
     requestPolicy(
       _subscriptionId: BigNumberish,
       _labelSuffix: string,
-      _verifyingKey: BytesLike,
-      _decryptingKey: BytesLike,
-      _size: BigNumberish,
-      _threshold: BigNumberish,
-      _startTimestamp: BigNumberish,
-      _endTimestamp: BigNumberish,
+      _policyRequest: PolicyRequestStruct,
       overrides?: CallOverrides
     ): Promise<[string, string] & { policyId: string; label: string }>;
 
@@ -399,27 +396,19 @@ export interface DKGSubscriptionManager extends BaseContract {
       newOwner?: string | null
     ): OwnershipTransferredEventFilter;
 
-    "PolicyRequested(uint256,address,bytes,bytes,uint16,uint16,uint32,uint32,string)"(
+    "PolicyRequested(uint256,address,bytes16,string,tuple)"(
       subscriptionId?: BigNumberish | null,
       consumer?: string | null,
-      verifyingKey?: null,
-      decryptingKey?: null,
-      _size?: null,
-      _threshold?: null,
-      _startTimestamp?: null,
-      _endTimestamp?: null,
-      label?: null
+      policyId?: BytesLike | null,
+      label?: null,
+      policyRequest?: null
     ): PolicyRequestedEventFilter;
     PolicyRequested(
       subscriptionId?: BigNumberish | null,
       consumer?: string | null,
-      verifyingKey?: null,
-      decryptingKey?: null,
-      _size?: null,
-      _threshold?: null,
-      _startTimestamp?: null,
-      _endTimestamp?: null,
-      label?: null
+      policyId?: BytesLike | null,
+      label?: null,
+      policyRequest?: null
     ): PolicyRequestedEventFilter;
 
     "SubscriptionCreated(uint256,address,uint16,uint32)"(
@@ -466,12 +455,7 @@ export interface DKGSubscriptionManager extends BaseContract {
     requestPolicy(
       _subscriptionId: BigNumberish,
       _labelSuffix: string,
-      _verifyingKey: BytesLike,
-      _decryptingKey: BytesLike,
-      _size: BigNumberish,
-      _threshold: BigNumberish,
-      _startTimestamp: BigNumberish,
-      _endTimestamp: BigNumberish,
+      _policyRequest: PolicyRequestStruct,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -523,12 +507,7 @@ export interface DKGSubscriptionManager extends BaseContract {
     requestPolicy(
       _subscriptionId: BigNumberish,
       _labelSuffix: string,
-      _verifyingKey: BytesLike,
-      _decryptingKey: BytesLike,
-      _size: BigNumberish,
-      _threshold: BigNumberish,
-      _startTimestamp: BigNumberish,
-      _endTimestamp: BigNumberish,
+      _policyRequest: PolicyRequestStruct,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -11,7 +11,7 @@ import { useContext } from "react";
 import { OpenDRM721v2__factory } from "types";
 import { bobFromSecret, delay } from "utils";
 import { MINT_COST, odrm721Address } from "utils/config";
-import { EnactedPolicy, Metadata } from "utils/types";
+import { Metadata } from "utils/types";
 import { useDKG } from "./useDKG";
 import { useOpenDRM } from "./useOpenDRM";
 
@@ -111,7 +111,7 @@ export function useStep3() {
         console.log({ policy });
         setPolicy(policy);
         setStepDone(2);
-        push("/setp4");
+        push("/step4");
         break;
       } catch (err) {
         console.log({ err });

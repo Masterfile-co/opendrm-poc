@@ -20,7 +20,7 @@ export default function MetadataField() {
               {
                 title: metadata.title,
                 description: metadata.description,
-                // image: middleEllipsis(hexlify(metadata.msgKit.ciphertext)),
+                image: middleEllipsis(hexlify(metadata.msgKit.toBytes())),
                 capsule: middleEllipsis(hexlify(metadata.msgKit.capsule.toBytes())),
               },
               null,

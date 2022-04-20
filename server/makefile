@@ -3,6 +3,7 @@
 install:
 	yarn 
 
+# up/local: DKG_MANAGER_ADDRESS=0x45067ae72a7f097b8e606a04291b554f96e754d8
 up/local:
 	yarn dev
 

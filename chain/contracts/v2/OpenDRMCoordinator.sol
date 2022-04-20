@@ -24,8 +24,8 @@ contract OpenDRMCoordinator {
     mapping(address => bool) isChild;
 
     struct Bob {
-        bytes verifyingKey;
-        bytes decryptingKey;
+        string verifyingKey;
+        string decryptingKey;
     }
 
     // Registry: Can probably be moved to a seperate contract
@@ -94,15 +94,15 @@ contract OpenDRMCoordinator {
 
     // Register Eth address -> Nu verifyingKey
     function register(
-        bytes calldata _verifyingKey,
-        bytes calldata _decryptingKey
+        string calldata _verifyingKey,
+        string calldata _decryptingKey
     ) external {
         registry[msg.sender] = Bob(_verifyingKey, _decryptingKey);
     }
 
     function checkRegistry(address user)
         public
-        returns (bytes memory verifyingKey, bytes memory decryptingKey)
+        returns (string memory verifyingKey, string memory decryptingKey)
     {
         Bob memory bob = registry[user];
         return (bob.verifyingKey, bob.decryptingKey);

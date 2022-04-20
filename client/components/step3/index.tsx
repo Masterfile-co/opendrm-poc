@@ -24,15 +24,8 @@ export default function Step3Page() {
     loading,
     tokenId,
     active,
-    // listenForPolicy,
   } = useStep3();
-  const { chainId } = useWeb3React();
 
-  // useEffect(() => {
-  //   if (chainId) {
-  //     listenForPolicy();
-  //   }
-  // }, [chainId]);
 
   return (
     <div className="flex flex-col min-h-screen items-center w-full h-full px-5 pb-5">

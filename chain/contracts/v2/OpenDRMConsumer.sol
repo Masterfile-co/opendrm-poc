@@ -3,7 +3,7 @@ pragma solidity 0.8.13;
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-import {DKGSubscriptionManager} from "./DKGSubscriptionManager.sol";
+import {DKGSubscriptionManager, PolicyRequest} from "./DKGSubscriptionManager.sol";
 import {IPRESubscriptionManager} from "./IPRESubscriptionManager.sol";
 
 import "hardhat/console.sol";
@@ -36,19 +36,21 @@ abstract contract OpenDRMConsumer is Initializable {
         // Policy Request Info
         uint256 _subscriptionId,
         string memory _labelSuffix,
-        bytes memory _verifyingKey,
-        bytes memory _decryptingKey
+        string memory _verifyingKey,
+        string memory _decryptingKey
     ) internal returns (bytes16 policyId) {
         // First request policy from Abiotic Alice
         (policyId, ) = _dkgManager.requestPolicy(
             _subscriptionId,
             _labelSuffix,
-            _verifyingKey,
-            _decryptingKey,
-            _size,
-            _threshold,
-            _startTimestamp,
-            _endTimestamp
+            PolicyRequest(
+                _size,
+                _threshold,
+                _verifyingKey,
+                _decryptingKey,
+                _startTimestamp,
+                _endTimestamp
+            )
         );
 
         uint256 policyCost = _preManager.getPolicyCost(

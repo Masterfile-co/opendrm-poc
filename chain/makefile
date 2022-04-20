@@ -1,13 +1,15 @@
+FORCE: ;
+
 node/goerli:
 	yarn hardhat node --fork ${GOERLI_URL} --hostname 0.0.0.0
 
 node/mumbai:
-	yarn hardhat node --fork ${MUMBAI_URL} --fork-block-number 25941385 --hostname 0.0.0.0
+	yarn hardhat node --fork ${MUMBAI_URL} --hostname 0.0.0.0
 
 node:
 	yarn hardhat node --hostname 0.0.0.0
 
-deploy:
+deploy: FORCE
 	yarn hardhat deploy
 
 deploy/local:

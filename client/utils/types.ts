@@ -15,7 +15,7 @@ export interface Step {
 }
 
 
-export interface EnactedPolicy {
+export interface EnactedPolicyInfo {
   policyEncryptingKey: PublicKey;
   publisherVerifyingKey: PublicKey;
   encryptedTreasureMap: EncryptedTreasureMap;

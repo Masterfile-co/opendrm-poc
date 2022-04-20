@@ -1,10 +1,10 @@
 import { createContext, Dispatch, useContext, useReducer } from "react";
-import { EnactedPolicy, Metadata, Step } from "utils/types";
+import { EnactedPolicyInfo, Metadata, Step } from "utils/types";
 
 export interface AppState {
   secret?: string;
   metadata?: Metadata;
-  policy?: EnactedPolicy;
+  policy?: EnactedPolicyInfo;
   loading: boolean;
   steps: Step[];
   tokenId: number;

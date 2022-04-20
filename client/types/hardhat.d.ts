@@ -65,18 +65,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
-      name: "AbioticAliceManager",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.AbioticAliceManager__factory>;
-    getContractFactory(
-      name: "IPolicyManager",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IPolicyManager__factory>;
-    getContractFactory(
-      name: "OpenDRM721",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.OpenDRM721__factory>;
-    getContractFactory(
       name: "DKGSubscriptionManager",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.DKGSubscriptionManager__factory>;
@@ -158,21 +146,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IERC165>;
-    getContractAt(
-      name: "AbioticAliceManager",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.AbioticAliceManager>;
-    getContractAt(
-      name: "IPolicyManager",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IPolicyManager>;
-    getContractAt(
-      name: "OpenDRM721",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.OpenDRM721>;
     getContractAt(
       name: "DKGSubscriptionManager",
       address: string,

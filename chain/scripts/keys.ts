@@ -2,6 +2,7 @@ import { Bob, SecretKey } from "@nucypher/nucypher-ts";
 import { ethers } from "ethers";
 
 // Run with `ts-node -r esm ./scripts/keys.ts <secret-key>`
+// dumbkey
 
 const NuConfig = {
   porterUri: "https://porter-lynx.nucypher.community/",

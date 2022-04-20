@@ -16,6 +16,7 @@ import Step2Loading from "components/step2/Step2Loading";
 import { useRouter } from "next/router";
 import { useAppState } from "providers/OpenDRMProvider";
 import { coordinatorAddress } from "utils/config";
+import { hexlify } from "ethers/lib/utils";
 
 const Step2: NextLayoutComponentType = () => {
   const [loading, setLoading] = useState(false);
@@ -44,7 +45,10 @@ const Step2: NextLayoutComponentType = () => {
     );
 
     coordinator
-      .register(bob.verifyingKey.toBytes(), bob.decryptingKey.toBytes())
+      .register(
+        hexlify(bob.verifyingKey.toBytes()),
+        hexlify(bob.decryptingKey.toBytes())
+      )
       .then((tx) => tx.wait())
       .then((res) => {
         setSecret(secret);
