@@ -4,7 +4,7 @@ import { EncryptedTreasureMap } from "@nucypher/nucypher-core";
 import { dkgUrl } from "utils/config";
 import axios, { AxiosResponse } from "axios";
 import { hexlify } from "ethers/lib/utils";
-import { fromBase64, fromHexString, toHexString } from "utils";
+import { delay, fromBase64, fromHexString, toHexString } from "utils";
 import { EnactedPolicyInfo } from "utils/types";
 
 interface GetPolicyResponse {
@@ -60,7 +60,10 @@ export function useDKG() {
       });
   };
 
-  const getPolicyId = async (label: string, bob: RemoteBob) => {
+  const getPolicyId = async (
+    label: string,
+    bob: RemoteBob
+  ): Promise<string> => {
     const params = {
       label,
       verifyingKey: toHexString(bob.verifyingKey.toBytes()),
@@ -69,20 +72,6 @@ export function useDKG() {
     return axios
       .get(`${dkgUrl}/policyId`, { params })
       .then((res) => res.data.policyId);
-  };
-
-  /**
-   * Get Alice's verfying key
-   * @returns Alice's verfiying key
-   */
-  const getVerifyingKey = async () => {
-    return axios
-      .get(`${dkgUrl}/verifyingKey`, {
-        responseType: "arraybuffer",
-      })
-      .then(({ data }) => {
-        return PublicKey.fromBytes(new Uint8Array(data));
-      });
   };
 
   const getLabel = (
@@ -95,5 +84,36 @@ export function useDKG() {
     );
   };
 
-  return { getEncryptingKey, getPolicyId, getLabel, getPolicy };
+  const listenForPolicy = async (
+    policyId: string
+  ): Promise<EnactedPolicyInfo> => {
+    await delay(3);
+    let attemptCount = 0;
+    let policy: EnactedPolicyInfo | null = null;
+
+    while (attemptCount < 5) {
+      try {
+        policy = await getPolicy(policyId);
+        break;
+      } catch (err) {
+        console.log({ err });
+        attemptCount++;
+        await delay(1);
+      }
+    }
+
+    if (!policy) {
+      throw new Error("Policy not found");
+    }
+
+    return policy;
+  };
+
+  return {
+    getEncryptingKey,
+    getPolicyId,
+    getLabel,
+    getPolicy,
+    listenForPolicy,
+  };
 }

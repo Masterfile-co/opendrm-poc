@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import VerticleSteps from "./VerticleSteps";
 import MetadataField from "./MetadataField";
-import Link from "next/link";
+
 
 export default function Sidebar() {
   return (

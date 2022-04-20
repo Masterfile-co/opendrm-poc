@@ -12,8 +12,8 @@ import { OpenDRM721v2__factory } from "types";
 import { bobFromSecret, delay } from "utils";
 import { MINT_COST, odrm721Address } from "utils/config";
 import { Metadata } from "utils/types";
-import { useDKG } from "./useDKG";
-import { useOpenDRM } from "./useOpenDRM";
+import { useDKG } from "../useDKG";
+import { useOpenDRM } from "../useOpenDRM";
 
 export function useStep3() {
   const dispatch = useContext(Step3DispatchContext);
@@ -24,7 +24,7 @@ export function useStep3() {
 
   const { chainId, provider } = useWeb3React();
 
-  const { getEncryptingKey, getLabel, getPolicyId, getPolicy } = useDKG();
+  const { getEncryptingKey, getLabel, getPolicyId, listenForPolicy } = useDKG();
   const { setMetadata, setPolicy, setStepDone } = useOpenDRM();
   const { push } = useRouter();
 
@@ -89,7 +89,7 @@ export function useStep3() {
       .then((res) => {
         setLoading(false);
         setStep3StepDone(1);
-        listenForPolicy();
+        waitForPolicy();
       })
       .catch((err) => {
         alert(`Error: ${err.message}`);
@@ -97,33 +97,21 @@ export function useStep3() {
       });
   };
 
-  const listenForPolicy = async () => {
-    let attemptCount = 0;
+  const waitForPolicy = async () => {
     const bob = bobFromSecret(secret!);
     const label = getLabel(odrm721Address, chainId!, tokenId);
     const policyId = await getPolicyId(label, bob);
 
-    await delay(3);
-
-    while (attemptCount < 5) {
-      try {
-        const policy = await getPolicy(policyId);
-        console.log({ policy });
-        setPolicy(policy);
-        setStepDone(2);
-        push("/step4");
-        break;
-      } catch (err) {
-        console.log({ err });
-        attemptCount++;
-        await delay(1);
-      }
-    }
-
-    if (attemptCount === 5) {
+    try {
+      const policy = await listenForPolicy(policyId);
+      setPolicy(policy);
+      setStepDone(2);
+      push("/step4");
+    } catch (err) {
       alert("Policy not found. Try again");
     }
   };
+
 
   return {
     cleartext,

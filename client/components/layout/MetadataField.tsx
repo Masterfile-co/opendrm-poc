@@ -1,6 +1,5 @@
 import { hexlify } from "ethers/lib/utils";
 
-import { Metadata } from "providers/OpenDRMContextProvider";
 import { useAppState } from "providers/OpenDRMProvider";
 import React from "react";
 import { middleEllipsis } from "utils";

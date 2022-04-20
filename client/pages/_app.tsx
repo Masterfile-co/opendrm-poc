@@ -24,4 +24,8 @@ const MyApp: NextComponentType<AppContext, AppInitialProps, AppLayoutProps> = ({
   );
 };
 
+MyApp.getInitialProps = (context: AppContext) => {
+  return { pageProps: null };
+};
+
 export default MyApp;

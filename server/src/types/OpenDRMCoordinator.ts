@@ -24,7 +24,7 @@ export interface OpenDRMCoordinatorInterface extends utils.Interface {
     "getNextDeployment()": FunctionFragment;
     "odrm721Implementation()": FunctionFragment;
     "preManager()": FunctionFragment;
-    "register(string,string)": FunctionFragment;
+    "register(bytes,bytes)": FunctionFragment;
     "registry(address)": FunctionFragment;
     "subscriptionId()": FunctionFragment;
   };
@@ -55,7 +55,7 @@ export interface OpenDRMCoordinatorInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "register",
-    values: [string, string]
+    values: [BytesLike, BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "registry", values: [string]): string;
   encodeFunctionData(
@@ -140,8 +140,8 @@ export interface OpenDRMCoordinator extends BaseContract {
     preManager(overrides?: CallOverrides): Promise<[string]>;
 
     register(
-      _verifyingKey: string,
-      _decryptingKey: string,
+      _verifyingKey: BytesLike,
+      _decryptingKey: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -175,8 +175,8 @@ export interface OpenDRMCoordinator extends BaseContract {
   preManager(overrides?: CallOverrides): Promise<string>;
 
   register(
-    _verifyingKey: string,
-    _decryptingKey: string,
+    _verifyingKey: BytesLike,
+    _decryptingKey: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -212,8 +212,8 @@ export interface OpenDRMCoordinator extends BaseContract {
     preManager(overrides?: CallOverrides): Promise<string>;
 
     register(
-      _verifyingKey: string,
-      _decryptingKey: string,
+      _verifyingKey: BytesLike,
+      _decryptingKey: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -250,8 +250,8 @@ export interface OpenDRMCoordinator extends BaseContract {
     preManager(overrides?: CallOverrides): Promise<BigNumber>;
 
     register(
-      _verifyingKey: string,
-      _decryptingKey: string,
+      _verifyingKey: BytesLike,
+      _decryptingKey: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -283,8 +283,8 @@ export interface OpenDRMCoordinator extends BaseContract {
     preManager(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     register(
-      _verifyingKey: string,
-      _decryptingKey: string,
+      _verifyingKey: BytesLike,
+      _decryptingKey: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

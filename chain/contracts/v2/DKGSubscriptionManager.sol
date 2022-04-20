@@ -8,9 +8,9 @@ import {LibNuCypher} from "../LibNuCypher.sol";
 struct PolicyRequest {
     uint16 size;
     uint16 threshold;
-    // TODO: Keys are 33 bytes. Easier to handle as strings
-    string verifyingKey;
-    string decryptingKey;
+    // TODO: Keys are 33 bytes.
+    bytes verifyingKey;
+    bytes decryptingKey;
     uint32 startTimestamp;
     uint32 endTimestamp;
 }
@@ -53,7 +53,8 @@ contract DKGSubscriptionManager is Ownable {
         uint16 numConsumers;
     }
 
-    string public verifyingKey;
+    // This could also be a mapping to accommodate multiple AbioticAlice with varying security levels
+    bytes public verifyingKey;
     // Per-second, per-node service fee rate
     uint256 public feeRate;
     uint256 internal subscriptionNonce;
@@ -75,7 +76,7 @@ contract DKGSubscriptionManager is Ownable {
         _;
     }
 
-    constructor(string memory _verifyingKey, uint256 _feeRate) {
+    constructor(bytes memory _verifyingKey, uint256 _feeRate) {
         verifyingKey = _verifyingKey;
         feeRate = _feeRate;
     }

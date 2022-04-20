@@ -3,20 +3,18 @@ import TextInputField from "components/TextInputField";
 import DescriptionBox from "components/layout/DescriptionBox";
 
 import { NextLayoutComponentType } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useOpenDRM } from "hooks/useOpenDRM";
 import EnterSecretKey from "components/step2/EnterSecretKey";
 import { useWeb3React } from "@web3-react/core";
-import { Bob, defaultConfiguration } from "@nucypher/nucypher-ts";
-import { ChainId } from "@nucypher/nucypher-ts/build/main/src/types";
-import { bobFromSecret, toSecretKey } from "utils";
+import { bobFromSecret } from "utils";
 import { OpenDRMCoordinator__factory } from "types";
 import { Web3Provider } from "@ethersproject/providers";
 import Step2Loading from "components/step2/Step2Loading";
 import { useRouter } from "next/router";
 import { useAppState } from "providers/OpenDRMProvider";
 import { coordinatorAddress } from "utils/config";
-import { hexlify } from "ethers/lib/utils";
+
 
 const Step2: NextLayoutComponentType = () => {
   const [loading, setLoading] = useState(false);
@@ -45,10 +43,7 @@ const Step2: NextLayoutComponentType = () => {
     );
 
     coordinator
-      .register(
-        hexlify(bob.verifyingKey.toBytes()),
-        hexlify(bob.decryptingKey.toBytes())
-      )
+      .register(bob.verifyingKey.toBytes(), bob.decryptingKey.toBytes())
       .then((tx) => tx.wait())
       .then((res) => {
         setSecret(secret);

@@ -5,9 +5,8 @@ import { useOpenDRM } from "hooks/useOpenDRM";
 import { NextLayoutComponentType } from "next";
 import { useRouter } from "next/router";
 import { useAppState } from "providers/OpenDRMProvider";
-import React, { useEffect } from "react";
-import { metamask } from "utils/connectors";
-import { mumbai } from "utils/constants";
+import React from "react";
+
 
 const Step1: NextLayoutComponentType = () => {
   const { steps } = useAppState();

@@ -21,8 +21,8 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 export type PolicyRequestStruct = {
   size: BigNumberish;
   threshold: BigNumberish;
-  verifyingKey: string;
-  decryptingKey: string;
+  verifyingKey: BytesLike;
+  decryptingKey: BytesLike;
   startTimestamp: BigNumberish;
   endTimestamp: BigNumberish;
 };
@@ -51,7 +51,7 @@ export interface DKGSubscriptionManagerInterface extends utils.Interface {
     "feeRate()": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "requestPolicy(uint256,string,(uint16,uint16,string,string,uint32,uint32))": FunctionFragment;
+    "requestPolicy(uint256,string,(uint16,uint16,bytes,bytes,uint32,uint32))": FunctionFragment;
     "subscriptions(uint256)": FunctionFragment;
     "sweep(address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
