@@ -45,10 +45,7 @@ const Step2: NextLayoutComponentType = () => {
     );
 
     coordinator
-      .register(
-        hexlify(bob.verifyingKey.toBytes()),
-        hexlify(bob.decryptingKey.toBytes())
-      )
+      .register(bob.verifyingKey.toBytes(), bob.decryptingKey.toBytes())
       .then((tx) => tx.wait())
       .then((res) => {
         setSecret(secret);

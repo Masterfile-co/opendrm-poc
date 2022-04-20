@@ -77,8 +77,8 @@ contract OpenDRM721v2 is ERC721Upgradeable, OpenDRMConsumer {
         {
             console.log("requesting new policy");
             (
-                string memory verifyingKey,
-                string memory decryptingKey
+                bytes memory verifyingKey,
+                bytes memory decryptingKey
             ) = _openDrmCoordinator.checkRegistry(to);
 
             // TODO: Handle if user not registered. Can probably skip policy and let them create one later?

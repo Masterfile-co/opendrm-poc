@@ -36,8 +36,8 @@ abstract contract OpenDRMConsumer is Initializable {
         // Policy Request Info
         uint256 _subscriptionId,
         string memory _labelSuffix,
-        string memory _verifyingKey,
-        string memory _decryptingKey
+        bytes memory _verifyingKey,
+        bytes memory _decryptingKey
     ) internal returns (bytes16 policyId) {
         // First request policy from Abiotic Alice
         (policyId, ) = _dkgManager.requestPolicy(

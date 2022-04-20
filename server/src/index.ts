@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express, { Request } from "express";
 import cors from "cors";
-import { Wallet, providers } from "ethers";
+import { Wallet, providers, ethers } from "ethers";
 import { DKGSubscriptionManager__factory } from "./types";
 import { TypedListener } from "./types/common";
 import {
@@ -100,6 +100,8 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
       )}, recipient verifying key: ${verifyingKey}`
     );
 
+    policyId = policyId.slice(2);
+
     const policyParams: BlockchainPolicyParameters = {
       bob: RemoteBob.fromKeys(_decryptingKey, _verifyingKey),
       label,
@@ -108,6 +110,8 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
       startDate: new Date(startTimestamp * 1000),
       endDate: new Date(endTimestamp * 1000),
     };
+
+    // This is basically Alice.generatePreEnactedPolicy but we need to override the policy HRAC to match the one derived on chain
 
     const { delegatingKey, verifiedKFrags } = nuAlice.generateKFrags(
       policyParams.bob,
@@ -128,44 +132,17 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
       policyParams.endDate
     );
 
+    // override hrac because it currently uses sha3 instead of keccak
+    //@ts-ignore
+    policy.hrac = HRAC.fromBytes(fromHexString(policyId));
+
     const porter = new Porter(defaultConfiguration(ChainId.MUMBAI).porterUri);
 
     const ursulas = await porter.getUrsulas(policyParams.shares);
 
-    // const newId = sha3
-    //   .sha3_256(
-    //     new Uint8Array([
-    //       ...nuAlice.verifyingKey.toBytes(),
-    //       ...policyParams.bob.verifyingKey.toBytes(),
-    //       ...toBytes(label),
-    //     ])
-    //   )
-    //   .slice(0, 32);
-
-    //@ts-ignore
-    policy.hrac = HRAC.fromBytes(fromHexString(policyId.slice(2)));
+    console.log({ ursulas });
 
     const enactedPolicy = await policy.generatePreEnactedPolicy(ursulas);
-
-    // const porter = new Porter(defaultConfiguration(ChainId.MUMBAI).porterUri);
-
-    // const ursulas = await porter.getUrsulas(policyParams.shares);
-
-    // console.log({ ursulas });
-
-    // const policy = await nuAlice.generatePreEnactedPolicy(
-    //   policyParams,
-    //   ursulas.map((ursula) => ursula.checksumAddress)
-    // );
-
-    // console.log({ policy });
-
-    // const policyId = toHexString(policy.id.toBytes());
-
-    // console.log({ length: nuAlice.verifyingKey.toBytes().length });
-    // console.log({
-    //   length: fromHexString(toHexString(nuAlice.verifyingKey.toBytes())).length,
-    // });
 
     enactedPolicies[policyId] = enactedPolicy;
 
@@ -269,27 +246,14 @@ app.get("/policyId", (req, res) => {
   let label = req.query.label as string;
   let bobVerifyingKey = req.query.verifyingKey as string;
 
-  // let policyId = new HRAC(
-  //   nuAlice.verifyingKey,
-  //   PublicKey.fromBytes(fromHexString(bobVerifyingKey)),
-  //   Buffer.from(label)
-  // );
-
-  // const policyId = sha3
-  //   .keccak256(
-  //     new Uint8Array([
-  //       ...nuAlice.verifyingKey.toBytes(),
-  //       ...fromHexString(bobVerifyingKey),
-  //       ...toBytes(label),
-  //     ])
-  //   )
-  //   .slice(0, 32);
-
-  const policyId = keccak256([
-    ...nuAlice.verifyingKey.toBytes(),
-    ...fromHexString(bobVerifyingKey),
-    ...toBytes(label),
-  ]);
+  const policyId = ethers.utils
+    .keccak256(
+      ethers.utils.solidityPack(
+        ["bytes", "bytes", "string"],
+        [nuAlice.verifyingKey.toBytes(), fromHexString(bobVerifyingKey), label]
+      )
+    )
+    .slice(2, 34);
 
   res.send({ policyId });
 });
