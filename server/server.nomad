@@ -62,6 +62,7 @@ job "opendrm-server" {
 	
 	  config {
         image = "634967882344.dkr.ecr.us-west-2.amazonaws.com/dev:opendrm-server-${var.IMAGETAG}"
+		ports = ["opendrm-server"]
       }
 
       template {
