@@ -14,11 +14,14 @@ import {
   toHexString,
   toSecretKey,
 } from "utils";
+import { useOpenDRM } from "./useOpenDRM";
 
 export function useStep4() {
   const { push } = useRouter();
   const { metadata, policy, secret, steps } = useAppState();
   const [cleartext, setCleartext] = useState<string | undefined>();
+  const [loading, setLoading] = useState(false);
+  const { setStepDone } = useOpenDRM();
 
   const decrypt = async () => {
     if (!secret) {
@@ -30,64 +33,23 @@ export function useStep4() {
       return;
     }
 
-    const decryptedMap: TreasureMap = policy.encryptedTreasureMap.decrypt(
-      toSecretKey(secret),
-      policy.publisherVerifyingKey
-    );
+    setLoading(true);
 
-    console.log({ decryptedMap });
-    console.log({ destinations: decryptedMap.destinations });
-    console.log({
-      destinations: decryptedMap.destinations.map((destination: any) =>
-        toHexString(destination[0])
-      ),
-    });
-
-    const retrievalKit = PolicyMessageKit.fromMessageKit(
-      metadata.msgKit,
-      policy.policyEncryptingKey,
-      decryptedMap.threshold
-    ).asRetrievalKit();
-
-    console.log({ retrievalKit });
-
-    const porter = new Porter(defaultConfiguration(ChainId.MUMBAI).porterUri);
     const bob = bobFromSecret(secret);
 
-    const data = {
-      treasure_map: toBase64(decryptedMap.toBytes()),
-      retrieval_kits: [toBase64(retrievalKit.toBytes())],
-      alice_verifying_key: toHexString(policy.publisherVerifyingKey.toBytes()),
-      bob_encrypting_key: toHexString(bob.decryptingKey.toBytes()),
-      bob_verifying_key: toHexString(bob.verifyingKey.toBytes()),
-    };
-
-    // const cfragRes = await porter.retrieveCFrags(
-    //   decryptedMap,
-    //   [retrievalKit],
-    //   policy.publisherVerifyingKey,
-    //   bob.decryptingKey,
-    //   bob.verifyingKey
-    // );
-
-    const resp = await axios.post(
-      `${defaultConfiguration(ChainId.MUMBAI).porterUri}/retrieve_cfrags`,
-      data
+    const res = await bob.retrieveAndDecrypt(
+      policy.policyEncryptingKey,
+      policy.publisherVerifyingKey,
+      [metadata.msgKit],
+      policy.encryptedTreasureMap
     );
 
-    console.log({ resp });
-
-    // const res = await bob.retrieveAndDecrypt(
-    //   policy.policyEncryptingKey,
-    //   policy.publisherVerifyingKey,
-    //   [metadata.msgKit],
-    //   policy.encryptedTreasureMap
-    // );
-
-    // setCleartext(fromBytes(res[0]));
+    setCleartext(fromBytes(res[0]));
+    setLoading(false);
   };
 
   const nextPage = () => {
+    setStepDone(3);
     push("/step5");
   };
 
@@ -98,5 +60,6 @@ export function useStep4() {
     active: steps[3].active,
     metadata,
     policy,
+    loading,
   };
 }

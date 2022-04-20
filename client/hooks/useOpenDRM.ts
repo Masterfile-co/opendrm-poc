@@ -1,6 +1,6 @@
 import { AppDispatchContext } from "providers/OpenDRMProvider";
 import { useContext } from "react";
-import { EnactedPolicy, Metadata } from "utils/types";
+import { EnactedPolicyInfo, Metadata } from "utils/types";
 
 export function useOpenDRM() {
   const dispatch = useContext(AppDispatchContext);
@@ -22,7 +22,7 @@ export function useOpenDRM() {
     dispatch({ type: "SET_METADATA", payload: { metadata } });
   };
 
-  const setPolicy = (policy: EnactedPolicy) => {
+  const setPolicy = (policy: EnactedPolicyInfo) => {
     dispatch({ type: "SET_POLICY", payload: { policy } });
   };
 

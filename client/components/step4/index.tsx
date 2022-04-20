@@ -7,7 +7,8 @@ import { PrimaryButton } from "components/Button";
 import { hexlify } from "ethers/lib/utils";
 
 export default function Step4Page() {
-  const { cleartext, decrypt, nextPage, active, policy, metadata } = useStep4();
+  const { cleartext, decrypt, nextPage, active, policy, metadata, loading } =
+    useStep4();
 
   return (
     <div className="flex flex-col min-h-screen justify-center items-center w-full h-full px-5 pb-5">
@@ -23,12 +24,12 @@ export default function Step4Page() {
         {!cleartext && (
           <PrimaryButton
             className="w-[215px]"
-            disabled={!metadata || !policy || !active}
+            disabled={!metadata || !policy || !active || loading}
             onClick={() => {
               decrypt();
             }}
           >
-            Decrypt
+            {loading ? "loading" : "Decrypt"}
           </PrimaryButton>
         )}
         {cleartext && (
