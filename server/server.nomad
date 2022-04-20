@@ -62,7 +62,7 @@ job "opendrm-server" {
       driver = "docker"
 	
 	  config {
-        image = "634967882344.dkr.ecr.us-west-2.amazonaws.com/dev:opendrm-server${var.IMAGETAG}"
+        image = "634967882344.dkr.ecr.us-west-2.amazonaws.com/dev:opendrm-server-${var.IMAGETAG}"
       }
 
       template {
