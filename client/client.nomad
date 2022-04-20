@@ -43,7 +43,7 @@ job "opendrm-client" {
 
 	  tags = [
 	    "traefik.enable=true",
-		"traefik.http.routers.opendrm-demo.rule=Host(`opendrm-demo.${var.DOMAIN}`)",
+		"traefik.http.routers.opendrmdemo.rule=Host(`opendrm-demo.${var.DOMAIN}`)",
 	  ]
 
       check {
