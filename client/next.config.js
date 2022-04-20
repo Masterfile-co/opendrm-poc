@@ -1,4 +1,5 @@
-const withTM = require("next-transpile-modules")(["@nucypher/nucypher-ts"]);
+const withTM = require("next-transpile-modules")(["nucypher-ts"]);
+
 
 /** @type {import('next').NextConfig} */
 module.exports = withTM({
@@ -23,10 +24,7 @@ module.exports = withTM({
   },
   publicRuntimeConfig: {
     // Will be available on both server and client
-    dkgUrl: process.env.DKG_URL,
-    coordinatorAddress: process.env.OPENDRM_COORDINATOR_ADDRESS,
-    odrm721Address: process.env.OPENDRM721_ADDRESS,
-    bobAddress: process.env.BOB_ADDRESS,
+    abioticAliceUrl: process.env.ABIOTIC_ALICE_URL,
   },
 });
 

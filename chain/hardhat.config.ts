@@ -18,10 +18,6 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
-import "./tasks/mint";
-import "./tasks/register";
-import "./tasks/deploy";
-
 const accounts = [];
 
 process.env.DEPLOYER_PRIVATE_KEY !== undefined
@@ -34,8 +30,8 @@ process.env.ALICE_PRIVATE_KEY !== undefined
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
-const config = {
-  solidity: "0.8.13",
+const config: HardhatUserConfig = {
+  solidity: "0.8.4",
   networks: {
     goerli: {
       url: process.env.GOERLI_URL || "",
@@ -43,22 +39,10 @@ const config = {
         mnemonic: process.env.MNEMONIC || "",
       },
     },
-    mumbai: {
-      url: process.env.MUMBAI_URL || "",
-      accounts: {
-        mnemonic: process.env.MNEMONIC || "",
-      },
-    },
     hardhat: {
-      // forking: {
-      //   url: process.env.MUMBAI_URL || "",
-      //   blockNumber: 25941385,
+      // mining: {
+      //   interval: 2000,
       // },
-    },
-    localhost: {
-      accounts: {
-        mnemonic: process.env.MNEMONIC || "",
-      },
     },
   },
   gasReporter: {
@@ -66,9 +50,7 @@ const config = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: {
-      polygonMumbai: process.env.ETHERSCAN_API_KEY,
-    },
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
   namedAccounts: {
     deployer: {

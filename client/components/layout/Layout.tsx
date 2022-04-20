@@ -4,14 +4,14 @@ import Sidebar from "./Sidebar";
 import Content from "./Content";
 import Loading from "./Loading";
 import WrongChainModal from "./WrongChainModal";
-
+import { useOpenDRM } from "hooks/provider/useOpenDRM";
 
 export default function Layout(props: React.HTMLAttributes<HTMLBodyElement>) {
-  // const { loading } = useOpenDRM();
+  const { loading } = useOpenDRM();
 
-  // if (loading) {
-  //   return <Loading />;
-  // }
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>

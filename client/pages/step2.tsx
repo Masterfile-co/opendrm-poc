@@ -1,68 +1,20 @@
 import { PrimaryButton } from "components/Button";
 import TextInputField from "components/TextInputField";
 import DescriptionBox from "components/layout/DescriptionBox";
-
+import { useStep2 } from "hooks/pages/useStep2";
 import { NextLayoutComponentType } from "next";
-import React, { useState } from "react";
-import { useOpenDRM } from "hooks/useOpenDRM";
-import EnterSecretKey from "components/step2/EnterSecretKey";
-import { useWeb3React } from "@web3-react/core";
-import { bobFromSecret } from "utils";
-import { OpenDRMCoordinator__factory } from "types";
-import { Web3Provider } from "@ethersproject/providers";
-import Step2Loading from "components/step2/Step2Loading";
-import { useRouter } from "next/router";
-import { useAppState } from "providers/OpenDRMProvider";
-import { coordinatorAddress } from "utils/config";
-
+import React from "react";
+import Spinner from "components/Spinner";
 
 const Step2: NextLayoutComponentType = () => {
-  const [loading, setLoading] = useState(false);
-  const { steps } = useAppState();
-  const { provider } = useWeb3React();
-  const { setSecret } = useOpenDRM();
-  const { push } = useRouter();
-
-  const register = async (secret: string) => {
-    setLoading(true);
-
-    if (!provider) {
-      alert("Please connect wallet");
-      return;
-    }
-    if (!secret) {
-      alert("Please enter secret");
-      return;
-    }
-
-    const bob = bobFromSecret(secret);
-
-    const coordinator = OpenDRMCoordinator__factory.connect(
-      coordinatorAddress,
-      (provider as Web3Provider).getSigner()
-    );
-
-    coordinator
-      .register(bob.verifyingKey.toBytes(), bob.decryptingKey.toBytes())
-      .then((tx) => tx.wait())
-      .then((res) => {
-        setSecret(secret);
-        setLoading(false);
-        push("/step3");
-      })
-      .catch((err) => {
-        alert(`Error: ${err.message}`);
-        setLoading(false);
-      });
-  };
-
+  const { secretKey, setSecretKey, registerUser, done, loading } = useStep2();
   return (
     <div className="flex flex-col min-h-screen justify-center items-center w-full h-full px-5 pb-5">
       <span className="border-2 border-[#313133] rounded text-[#6b7280] p-3 mt-12">
         Get{" "}
         <a
           className="text-[#Cf54AB]"
-          href="https://faucet.polygon.technology/"
+          href="https://faucet.paradigm.xyz/"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -71,9 +23,45 @@ const Step2: NextLayoutComponentType = () => {
       </span>
       <div className="flex flex-col h-full justify-center items-center w-full space-y-10">
         {!loading && (
-          <EnterSecretKey register={register} done={steps[1].done} />
+          <>
+            {" "}
+            <span className="text-3xl text-center font-semibold">
+              Register your NuCypher wallet
+            </span>
+            <div className="min-w-[434px]">
+              <TextInputField
+                id="nu-pw"
+                type="password"
+                placeholder="Enter a password"
+                value={secretKey}
+                onChange={setSecretKey}
+              />
+              <p className="mt-2 text-sm text-[#CF5163] font-secondary">
+                This password is not stored securely. Do not use a real
+                password.
+              </p>
+            </div>
+            <PrimaryButton
+              className="w-[215px]"
+              disabled={!secretKey || done}
+              onClick={() => {
+                registerUser();
+              }}
+            >
+              Register
+            </PrimaryButton>
+          </>
         )}
-        {loading && <Step2Loading />}
+        {loading && (
+          <>
+            <span className="text-3xl text-center font-semibold max-w-[450px]">
+              Registering Wallet
+            </span>
+            <div className="h-[50px] w-[50px]">
+              <Spinner />
+            </div>
+          </>
+        )}
       </div>
       <DescriptionBox
         description={

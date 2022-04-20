@@ -1,10 +1,14 @@
 import { PrimaryButton } from "components/Button";
 
+import EncryptData from "components/EncryptData";
+import type { NextPage } from "next";
 import type { NextLayoutComponentType } from "next";
 import { useRouter } from "next/router";
-
+import { useEffect } from "react";
+import { ConnectorNames } from "utils/connectors";
 
 import Image from "next/image";
+import Link from "next/link";
 
 const Home: NextLayoutComponentType = () => {
   const { push } = useRouter();

@@ -1,18 +1,18 @@
 import Link from "next/link";
 import React from "react";
 import { CheckIcon } from "@heroicons/react/solid";
-import { useAppState } from "providers/OpenDRMProvider";
+import { useOpenDRM } from "hooks/provider/useOpenDRM";
 
 export default function VerticleSteps() {
-  const { steps } = useAppState();
-  
+  const { steps } = useOpenDRM();
+
   return (
     <nav className="h-full flex items-center">
       <ol role="list">
         {steps.map((step, idx) => (
           <div key={step.label} className="flex flex-col">
             <li>
-              <Link href={`/step${step.label}`} passHref>
+              <Link href={`step${step.label}`} passHref>
                 <div className="flex items-center hover:cursor-pointer">
                   <span
                     className={`w-10 h-10 flex items-center justify-center rounded-full 
