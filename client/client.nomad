@@ -31,8 +31,7 @@ job "opendrm-client" {
     network {
      
       port "opendrm-client" {
-        static = 3000
-     
+        to = 3000
       }
 
     }

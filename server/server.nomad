@@ -32,8 +32,7 @@ job "opendrm-server" {
     network {
      
       port "opendrm-server" {
-        static = 3001
-     
+        to = 3001
       }
 
     }
