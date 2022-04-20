@@ -1,28 +1,32 @@
 import { PrimaryButton } from "components/Button";
 import DecryptBox from "components/DecryptBox";
+import { hexlify } from "ethers/lib/utils";
 import React from "react";
+import { Metadata } from "utils/types";
 
 export interface Decrypt {
-  image: string;
+  metadata: Metadata | undefined;
   bobCleartext: string | undefined;
   decryptAsBob: () => Promise<void>;
-  decryptAsYou: () => Promise<void>
+  loading: boolean;
+  // decryptAsYou: () => Promise<void>
 }
 
 export default function Decrypt(props: Decrypt) {
-  const { image, bobCleartext, decryptAsBob, decryptAsYou } = props;
+  const { metadata, bobCleartext, decryptAsBob, loading } = props;
   return (
     <div className="flex w-full justify-center space-x-10">
       <div className="flex flex-col items-center space-y-5">
         <span className="text-3xl text-center max-w-[330px] font-semibold">
           Decrypt as you
         </span>
-        <DecryptBox>{image}</DecryptBox>
+        <DecryptBox>{hexlify(metadata?.msgKit.toBytes() || "0x")}</DecryptBox>
         <PrimaryButton
           className="w-[215px]"
-            onClick={() => {
-              decryptAsYou();
-            }}
+          disabled
+          // onClick={() => {
+          //   decryptAsYou();
+          // }}
         >
           Decrypt
         </PrimaryButton>
@@ -31,15 +35,19 @@ export default function Decrypt(props: Decrypt) {
         <span className="text-3xl text-center max-w-[330px] font-semibold">
           Decrypt as Bob
         </span>
-        <DecryptBox>{bobCleartext ? bobCleartext : image}</DecryptBox>
+        <DecryptBox>
+          {bobCleartext
+            ? bobCleartext
+            : hexlify(metadata?.msgKit.toBytes() || "0x")}
+        </DecryptBox>
         <PrimaryButton
           className="w-[215px]"
-          // disabled={!secretKey || done}
+          disabled={loading}
           onClick={() => {
             decryptAsBob();
           }}
         >
-          Decrypt
+          {loading ? "loading" : "Decrypt"}
         </PrimaryButton>
       </div>
     </div>

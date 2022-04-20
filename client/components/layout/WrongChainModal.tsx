@@ -1,26 +1,23 @@
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon } from "@heroicons/react/outline";
-import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
-import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
+import { metamaskHooks } from "utils/connectors";
+import { useConnect } from "hooks/useConnect";
+import { PrimaryButton } from "components/Button";
 
 export default function WrongChainModal() {
-  const { library, chainId, error } = useWeb3React<Web3Provider>();
+  const { chainId, account } = useWeb3React();
+  const { connectMetamask } = useConnect();
 
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (chainId) {
-      if (chainId !== 5) {
-        setOpen(true);
-      }
+    if ((chainId && chainId !== 80001) || (account && !chainId)) {
+      setOpen(true);
+    } else {
       setOpen(false);
-      return
     }
-    if(error instanceof UnsupportedChainIdError){
-        setOpen(true)
-    }
-  }, [chainId, error]);
+  }, [chainId, account]);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -67,10 +64,13 @@ export default function WrongChainModal() {
                   >
                     Wrong Network
                   </Dialog.Title>
-                  <div className="mt-4">
+                  <div className="mt-4 flex flex-col gap-y-8">
                     <p className="text-sm leading-6">
-                      Please change your active network to Goerli testnet
+                      Please change your active network to Mumbai testnet
                     </p>
+                    <PrimaryButton onClick={connectMetamask}>
+                      Change Network
+                    </PrimaryButton>
                   </div>
                 </div>
               </div>

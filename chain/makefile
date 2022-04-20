@@ -1,10 +1,15 @@
+FORCE: ;
+
 node/goerli:
 	yarn hardhat node --fork ${GOERLI_URL} --hostname 0.0.0.0
+
+node/mumbai:
+	yarn hardhat node --fork ${MUMBAI_URL} --hostname 0.0.0.0
 
 node:
 	yarn hardhat node --hostname 0.0.0.0
 
-deploy:
+deploy: FORCE
 	yarn hardhat deploy
 
 deploy/local:
@@ -12,6 +17,9 @@ deploy/local:
 
 deploy/goerli:
 	yarn hardhat deploy --network goerli
+
+deploy/mumbai:
+	yarn hardhat deploy --network mumbai
 
 transfer:
 	yarn hardhat run scripts/transfer.ts --network localhost
@@ -35,7 +43,7 @@ typechain/server:
 	TYPECHAIN_DIR=../server/src/types yarn hardhat typechain
 
 verify:
-	yarn hardhat etherscan-verify --network goerli
+	yarn hardhat etherscan-verify --network mumbai
 
 install:
 	yarn --registry http://localhost:4873/

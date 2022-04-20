@@ -1,6 +1,7 @@
 import { CheckIcon } from "@heroicons/react/solid";
-import { Step } from "providers/OpenDRMContextProvider";
+
 import React from "react";
+import { Step } from "utils/types";
 
 
 export default function HorizontalSteps({ steps }: { steps: Step[] }) {
