@@ -1,7 +1,7 @@
 import React from "react";
 
 import DescriptionBox from "components/layout/DescriptionBox";
-import { useStep4 } from "hooks/useStep4";
+import { useStep4 } from "hooks/pages/useStep4";
 import DecryptBox from "components/DecryptBox";
 import { PrimaryButton } from "components/Button";
 import { hexlify } from "ethers/lib/utils";

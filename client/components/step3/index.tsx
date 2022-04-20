@@ -1,18 +1,13 @@
 import HorizontalSteps from "components/layout/HorizontalSteps";
-import { useAppState } from "providers/OpenDRMProvider";
-import { useStep3State } from "providers/pages/Step3Provider";
 import DescriptionBox from "components/layout/DescriptionBox";
 
-import React, { useEffect } from "react";
+import React from "react";
 
 import Encrypt from "./Encrypt";
 import Mint from "./Mint";
 import Policy from "./Policy";
-import { useStep3 } from "hooks/useStep3";
-import { useWeb3React } from "@web3-react/core";
-import { OpenDRM721v2__factory } from "types";
-import { MINT_COST, odrm721Address } from "utils/config";
-import { Web3Provider } from "@ethersproject/providers";
+import { useStep3 } from "hooks/pages/useStep3";
+
 
 export default function Step3Page() {
   const {

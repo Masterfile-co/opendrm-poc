@@ -14,7 +14,7 @@ import {
   toHexString,
   toSecretKey,
 } from "utils";
-import { useOpenDRM } from "./useOpenDRM";
+import { useOpenDRM } from "../useOpenDRM";
 
 export function useStep4() {
   const { push } = useRouter();

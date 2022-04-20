@@ -10,8 +10,8 @@ import { useContext } from "react";
 import { OpenDRM721v2__factory } from "types";
 import { bobFromSecret, fromBytes } from "utils";
 import { bobAddress, odrm721Address } from "utils/config";
-import { useDKG } from "./useDKG";
-import { useOpenDRM } from "./useOpenDRM";
+import { useDKG } from "../useDKG";
+import { useOpenDRM } from "../useOpenDRM";
 
 export function useStep5() {
   const dispatch = useContext(Step5DispatchContext);

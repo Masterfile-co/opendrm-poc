@@ -5,7 +5,7 @@ import Transfer from "./Transfer";
 import Policy from "./Policy";
 import Decrypt from "./Decrypt";
 
-import { useStep5 } from "hooks/useStep5";
+import { useStep5 } from "hooks/pages/useStep5";
 import React from "react";
 
 export default function Step5Page() {

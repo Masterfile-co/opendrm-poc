@@ -12,8 +12,8 @@ import { OpenDRM721v2__factory } from "types";
 import { bobFromSecret, delay } from "utils";
 import { MINT_COST, odrm721Address } from "utils/config";
 import { Metadata } from "utils/types";
-import { useDKG } from "./useDKG";
-import { useOpenDRM } from "./useOpenDRM";
+import { useDKG } from "../useDKG";
+import { useOpenDRM } from "../useOpenDRM";
 
 export function useStep3() {
   const dispatch = useContext(Step3DispatchContext);

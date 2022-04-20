@@ -5,7 +5,7 @@ up:
 	yarn dev
 
 build:
-	@docker build -t opendrm-client:latest -t opendrm-client:$(GIT_SHA) -t 634967882344.dkr.ecr.us-west-2.amazonaws.com/masterfile:opendrm-client-$(GIT_SHA) -t 634967882344.dkr.ecr.us-west-2.amazonaws.com/masterfile:opendrm-client-latest .
+	@docker build -t 634967882344.dkr.ecr.us-west-2.amazonaws.com/dev:opendrm-client-$(GIT_SHA) .
 
 build/dev:
 	yarn build
@@ -23,5 +23,4 @@ run:
 	opendrm-client
 
 push: ## Push production image of service to respository
-	@docker push 634967882344.dkr.ecr.us-west-2.amazonaws.com/masterfile:opendrm-client-$(GIT_SHA)
-	@docker push 634967882344.dkr.ecr.us-west-2.amazonaws.com/masterfile:opendrm-client-latest
+	@docker push 634967882344.dkr.ecr.us-west-2.amazonaws.com/dev:opendrm-client-$(GIT_SHA)
