@@ -1,19 +1,17 @@
-name: 'Build and Deploy Client'
+name: "Build and Deploy Client"
 on:
   push:
     paths:
       - "client/**"
-    # branches:
-    #   - develop
-    
+    branches:
+      - main
 
 jobs:
   BUILD_SERVER:
     runs-on: ["self-hosted", "X64", "Linux"]
     steps:
       - name: own
-        run: 
-          sudo chown -R $USER:$USER /home/ubuntu/actions-runner/_work/opendrm-poc
+        run: sudo chown -R $USER:$USER /home/ubuntu/actions-runner/_work/opendrm-poc
       - name: checkout
         uses: actions/checkout@v2
       - name: build

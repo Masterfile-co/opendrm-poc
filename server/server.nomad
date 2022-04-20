@@ -19,12 +19,12 @@ job "opendrm-server" {
 		change_signal = "SIGUSR1"
 	}
 
-	// update {
-	// 	max_parallel     = 2
-	// 	min_healthy_time = "30s"
-	// 	healthy_deadline = "5m"
-	// 	auto_revert = true
-	// }
+	update {
+		max_parallel     = 2
+		min_healthy_time = "30s"
+		healthy_deadline = "5m"
+		auto_revert = true
+	}
 
   group "opendrm-server" {
     count = 1
@@ -46,14 +46,14 @@ job "opendrm-server" {
 		"traefik.http.routers.opendrmserver.rule=Host(`opendrm-server.${var.DOMAIN}`)",
 	  ]
 
-    //   check {
-    //     name     = "alive"
-    //     type     = "tcp"
-    //     port     = "opendrm-server"
-    //     path     = "/healthcheck"
-    //     interval = "10s"
-    //     timeout  = "2s"
-    //   }
+      check {
+        name     = "alive"
+        type     = "tcp"
+        port     = "opendrm-server"
+        path     = "/healthcheck"
+        interval = "10s"
+        timeout  = "2s"
+      }
     }
 
     task "opendrm-server" {
