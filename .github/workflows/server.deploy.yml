@@ -6,6 +6,7 @@ on:
       - ".github/**"
     # branches:
     #   - develop
+    #
 
 jobs:
   BUILD_SERVER:
