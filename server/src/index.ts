@@ -156,6 +156,10 @@ const handlePolicyRequested: TypedListener<PolicyRequestedEvent> = async (
 
 dkgManager.on(policyRequestFilter, handlePolicyRequested);
 
+app.get("/healthcheck", async (req, res) => {
+  res.send("healthy");
+});
+
 app.get("/", async (req, res) => {
   // console.log(await dkgManager.verifyingKey());
   // console.log(toHexString(nuAlice.verifyingKey.toBytes()));

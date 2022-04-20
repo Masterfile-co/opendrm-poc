@@ -22,12 +22,12 @@ jobs:
           make server/build
           make server/push
           make server/clean
-  # DEPLOY_AUTH:
-  #   runs-on: ["self-hosted", "X64", "Linux"]
-  #   needs: BUILD_SERVER
-  #   steps:
-  #     - name: checkout
-  #       uses: actions/checkout@v2
-  #     - name: deploy
-  #       run: |
-  #         make server/deploy TAG=$(git rev-parse HEAD) ADDRESS=http://nomad.masterfiledev.service
+  DEPLOY_SERVER:
+    runs-on: ["self-hosted", "X64", "Linux"]
+    needs: BUILD_SERVER
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: deploy
+        run: |
+          make server/deploy TAG=$(git rev-parse HEAD) ADDRESS=http://nomad.masterfiledev.service
