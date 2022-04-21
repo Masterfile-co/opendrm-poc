@@ -1,0 +1,15 @@
+@startuml register
+
+
+participant Client
+entity OpenDRMCoordinator as Coord
+
+skinparam Style strictuml
+
+[-> Client : secretKey
+Client -> Client: fromSecretKey()
+
+Client -> Coord : regsiter(pubicKeys)
+return `success`
+
+@enduml

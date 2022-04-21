@@ -3,5 +3,12 @@
   "solidity.compileUsingRemoteVersion": "latest",
   "solidity.packageDefaultDependenciesContractsDirectory": "",
   "solidity.packageDefaultDependenciesDirectory": "chain/node_modules",
-  "solidity.remappings": ["contracts=chain/contracts"]
+  "solidity.remappings": [
+    "contracts=chain/contracts"
+  ],
+  "plantuml.diagramsRoot": "docs/diagrams",
+  "plantuml.exportFormat": "utxt",
+  "plantuml.exportOutDir": "docs/out",
+  "plantuml.render": "PlantUMLServer",
+  "plantuml.server": "https://www.plantuml.com/plantuml"
 }

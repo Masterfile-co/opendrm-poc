@@ -1,0 +1,27 @@
+@startuml
+
+skinparam Style strictuml
+
+
+participant ODRM721
+entity OpenDRMCoordinator as Coord
+entity DKGSubscriptionManager as DKG
+entity PRESubscriptionManager as PRE
+
+[-> ODRM721 : mint()
+ODRM721 -> ODRM721 : beforeTokenTransfer
+
+ODRM721 -> Coord : checkRegistry(to)
+return `publicKeys`
+
+ODRM721 -> DKG : requestPolicy(publicKeys, ...policyInfo)
+DKG ->]: emit PolicyRequested
+DKG -> ODRM721 : `policyId`
+
+ODRM721 -> PRE : createPolicy(policyId, ...policyInfo)
+PRE ->] : emit PolicyCreated
+PRE -> ODRM721 : `success`
+
+ODRM721 -> ODRM721 : transfer(0x00, to)
+
+@enduml

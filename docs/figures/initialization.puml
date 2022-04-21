@@ -1,0 +1,19 @@
+@startuml
+
+skinparam Style strictuml
+
+entity OpenDRMCoordinator as Coord
+entity DKGSubscriptionManager as DKG
+collections ODRM721
+
+
+Coord -> DKG : createSubscription()
+return `subscriptionId`
+
+loop deploy
+    Coord -> ODRM721 ** : deploy()
+    return `address`
+    Coord -> DKG : addConsumer(address)
+end
+
+@enduml
