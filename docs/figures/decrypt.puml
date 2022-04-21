@@ -1,0 +1,21 @@
+@startuml decrypt
+
+skinparam Style strictuml
+
+participant Client
+actor AbioticAlice as AA
+actor Ursula as UR
+
+
+Client -> AA : getPolicy(policyId)
+return `EnactedPolicy`
+
+loop for n of m
+    Client -> UR : proxyReencrypt()
+    return `cfrag`
+end
+
+Client -> Client : decrypt([cfrag])
+
+
+@enduml

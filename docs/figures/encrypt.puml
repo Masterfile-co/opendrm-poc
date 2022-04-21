@@ -1,0 +1,18 @@
+@startuml encrypt
+
+skinparam Style strictuml
+
+participant Client
+actor AbioticAlice as AA
+database Storage
+
+
+Client -> AA : getEncryptingKey(label)
+return `encryptingKey`
+
+
+Client -> Client : encrypt(media, encryptingKey)
+Client -> Storage : cyphertext
+
+
+@enduml
