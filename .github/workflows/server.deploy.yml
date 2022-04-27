@@ -1,10 +1,6 @@
 name: 'Build and Deploy Server'
 on:
-  push:
-    paths:
-      - "server/**"
-    branches:
-      - main
+  push
     
 
 jobs:

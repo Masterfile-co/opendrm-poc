@@ -1,10 +1,6 @@
 name: "Build and Deploy Client"
 on:
-  push:
-    paths:
-      - "client/**"
-    branches:
-      - main
+  push
 
 jobs:
   BUILD_SERVER:
